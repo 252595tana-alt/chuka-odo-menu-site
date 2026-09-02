@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.qa-py/
+.openai/
+video-reference-frames/
+
+# Local QA captures and generated comparison images
+/qa-*.mjs
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
+/*.mp4
+/public/assets/*.png
+
+# Logs and local environment files
+*.log
+.env
+.env.*
+!.env.example
