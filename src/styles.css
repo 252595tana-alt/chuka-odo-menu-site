@@ -54,6 +54,7 @@ a:focus-visible {
 .experience {
   --page-progress: 0;
   --hero-exit: 0;
+  --hero-controls-in: 0;
   --hero-opacity: 1;
   --menu-opacity: 0;
   --story-opacity: 0;
@@ -2413,8 +2414,8 @@ body,
 .noren-panel {
   z-index: 1;
   transition:
-    clip-path 110ms cubic-bezier(0.2, 0.72, 0.25, 1),
-    transform 140ms cubic-bezier(0.2, 0.72, 0.25, 1);
+    clip-path 190ms cubic-bezier(0.18, 0.82, 0.24, 1),
+    transform 220ms cubic-bezier(0.18, 0.82, 0.24, 1);
   will-change: clip-path, transform;
 }
 
@@ -2773,6 +2774,15 @@ a:focus-visible {
 
 .scroll-progress span {
   background: #e66a4c;
+}
+
+.hero-stage .menu-selector,
+.hero-stage .active-detail {
+  opacity: calc(var(--hero-exit) * var(--hero-controls-in));
+}
+
+.hero-stage .scroll-cue {
+  opacity: var(--hero-controls-in);
 }
 
 .video-backdrop {

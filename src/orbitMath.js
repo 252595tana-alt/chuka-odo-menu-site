@@ -3,7 +3,7 @@ export const AUTO_ROTATION_SECONDS = Object.freeze({
   mobile: 28,
 });
 
-export const ORBIT_SCROLL_START = 0.26;
+export const ORBIT_SCROLL_START = 0.33;
 export const ORBIT_SCROLL_SPAN = 0.26;
 export const ORBIT_SCROLL_ROTATIONS = 2;
 
