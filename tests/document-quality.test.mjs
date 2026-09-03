@@ -8,7 +8,7 @@ test("publishes complete search and share metadata", async () => {
   const html = await readFile(new URL("index.html", projectUrl), "utf8");
 
   assert.match(html, /<html lang="ja">/);
-  assert.match(html, /rel="canonical" href="https:\/\/chuka-odo-menu-site\.open-llama-9959\.chatgpt\.site\/"/);
+  assert.match(html, /rel="canonical" href="https:\/\/252595tana-alt\.github\.io\/chuka-odo-menu-site\/"/);
   assert.match(html, /property="og:title" content="中華の王道 \| 3D メニュー体験"/);
   assert.match(html, /property="og:image:alt"/);
   assert.match(html, /name="robots" content="index, follow, max-image-preview:large"/);

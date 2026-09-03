@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://chuka-odo-menu-site.open-llama-9959.chatgpt.site/sitemap.xml
+Sitemap: https://252595tana-alt.github.io/chuka-odo-menu-site/sitemap.xml
