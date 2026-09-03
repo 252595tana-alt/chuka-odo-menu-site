@@ -27,7 +27,8 @@ test("keeps the interactive menu accessible without relying on WebGL", async () 
 test("keeps the cinematic background video directly playable", async () => {
   const app = await readFile(new URL("src/App.jsx", projectUrl), "utf8");
 
-  assert.match(app, /src="\/assets\/odo\/background\.mp4"/);
+  assert.match(app, /const assetUrl = \(filename\) => `\$\{import\.meta\.env\.BASE_URL\}assets\/odo\/\$\{filename\}`/);
+  assert.match(app, /src=\{assetUrl\("background\.mp4"\)\}/);
   assert.match(app, /autoPlay/);
   assert.match(app, /muted/);
   assert.match(app, /playsInline/);

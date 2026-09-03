@@ -10,6 +10,8 @@ import {
   getScrollRotation,
 } from "./orbitMath.js";
 
+const assetUrl = (filename) => `${import.meta.env.BASE_URL}assets/odo/${filename}`;
+
 const products = [
   {
     id: "gyoza",
@@ -17,7 +19,7 @@ const products = [
     latin: "PAN-SEARED DUMPLINGS",
     category: "点心",
     copy: "薄皮を香ばしく焼き上げ、野菜の甘みを閉じ込めました。",
-    image: "/assets/odo/gyoza.jpg",
+    image: assetUrl("gyoza.jpg"),
   },
   {
     id: "shoyu-men",
@@ -25,7 +27,7 @@ const products = [
     latin: "AROMATIC SOY NOODLES",
     category: "湯麺",
     copy: "澄んだ醤油スープに、香味油の余韻を重ねた一杯。",
-    image: "/assets/odo/shoyu-men.jpg",
+    image: assetUrl("shoyu-men.jpg"),
   },
   {
     id: "sesame-chicken",
@@ -33,7 +35,7 @@ const products = [
     latin: "SESAME POACHED CHICKEN",
     category: "冷菜",
     copy: "しっとり蒸し鶏と胡瓜を、香ばしい胡麻だれで。",
-    image: "/assets/odo/sesame-chicken.jpg",
+    image: assetUrl("sesame-chicken.jpg"),
   },
   {
     id: "black-vinegar-pork",
@@ -41,7 +43,7 @@ const products = [
     latin: "BLACK VINEGAR PORK",
     category: "熱菜",
     copy: "芳醇な黒酢の酸味と、果実の甘みを艶やかに。",
-    image: "/assets/odo/black-vinegar-pork.jpg",
+    image: assetUrl("black-vinegar-pork.jpg"),
   },
   {
     id: "shrimp-greens",
@@ -49,7 +51,7 @@ const products = [
     latin: "PRAWNS & JADE GREENS",
     category: "炒菜",
     copy: "海老と旬の青菜を、生姜の香りで軽やかに炒めます。",
-    image: "/assets/odo/shrimp-greens.jpg",
+    image: assetUrl("shrimp-greens.jpg"),
   },
 ];
 
@@ -287,7 +289,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
     const arrowTangents = orbitArrows.map(() => new THREE.Vector3());
 
     const textureLoader = new THREE.TextureLoader();
-    const dragonTexture = textureLoader.load("/assets/odo/dragon-column.png");
+    const dragonTexture = textureLoader.load(assetUrl("dragon-column.png"));
     dragonTexture.colorSpace = THREE.SRGBColorSpace;
     const dragonMaterial = new THREE.ShaderMaterial({
       uniforms: {
@@ -643,7 +645,7 @@ function NorenGate() {
       <div className="noren-panel noren-panel--left">
         <img
           className="noren-cloth"
-          src="/assets/odo/noren.jpg"
+          src={assetUrl("noren.jpg")}
           alt=""
           fetchPriority="high"
           decoding="sync"
@@ -654,7 +656,7 @@ function NorenGate() {
       <div className="noren-panel noren-panel--right">
         <img
           className="noren-cloth"
-          src="/assets/odo/noren.jpg"
+          src={assetUrl("noren.jpg")}
           alt=""
           fetchPriority="high"
           decoding="sync"
@@ -663,7 +665,7 @@ function NorenGate() {
         {wordmark}
       </div>
       <div className="noren-rail">
-        <img src="/assets/odo/noren.jpg" alt="" draggable="false" />
+        <img src={assetUrl("noren.jpg")} alt="" draggable="false" />
       </div>
     </div>
   );
@@ -829,8 +831,8 @@ export function App() {
       <NorenGate />
       <video
         className="video-backdrop"
-        src="/assets/odo/background.mp4"
-        poster="/assets/odo/paper-texture.jpg"
+        src={assetUrl("background.mp4")}
+        poster={assetUrl("paper-texture.jpg")}
         autoPlay
         muted
         loop
