@@ -294,20 +294,28 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
         map: { value: dragonTexture },
         opacity: { value: 0 },
         turn: { value: 0 },
+        relief: { value: 0.26 },
+        texelSize: { value: new THREE.Vector2(1 / 768, 1 / 1366) },
       },
       vertexShader: `
+        uniform sampler2D map;
         uniform float turn;
+        uniform float relief;
         varying vec2 vUv;
 
         void main() {
           vUv = uv;
           vec3 transformed = position;
+          vec4 surface = texture2D(map, uv);
+          float luminance = dot(surface.rgb, vec3(0.2126, 0.7152, 0.0722));
+          float reliefHeight = surface.a * (0.24 + luminance * 0.76);
           float verticalPhase = (uv.y - 0.5) * 0.78;
           float twist = turn + verticalPhase;
           float width = 0.78 + abs(cos(twist)) * 0.22;
           transformed.x *= width;
           transformed.x += sin(twist + uv.y * 1.7) * 0.055;
-          transformed.z += sin(twist) * position.x * 0.24;
+          transformed.z += sin(twist) * position.x * 0.2;
+          transformed.z += reliefHeight * relief;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
         }
       `,
@@ -315,19 +323,42 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
         uniform sampler2D map;
         uniform float opacity;
         uniform float turn;
+        uniform vec2 texelSize;
         varying vec2 vUv;
+
+        float surfaceHeight(vec2 sampleUv) {
+          vec4 sampleColor = texture2D(map, sampleUv);
+          float sampleLuminance = dot(sampleColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+          return sampleColor.a * (0.24 + sampleLuminance * 0.76);
+        }
 
         void main() {
           vec4 source = texture2D(map, vUv);
-          float glint = 0.94 + abs(cos(turn)) * 0.06;
-          gl_FragColor = vec4(source.rgb * glint, source.a * opacity);
+          if (source.a < 0.01) discard;
+
+          float leftHeight = surfaceHeight(vUv - vec2(texelSize.x * 2.0, 0.0));
+          float rightHeight = surfaceHeight(vUv + vec2(texelSize.x * 2.0, 0.0));
+          float lowerHeight = surfaceHeight(vUv - vec2(0.0, texelSize.y * 2.0));
+          float upperHeight = surfaceHeight(vUv + vec2(0.0, texelSize.y * 2.0));
+          vec3 surfaceNormal = normalize(vec3(
+            (leftHeight - rightHeight) * 4.4,
+            (lowerHeight - upperHeight) * 4.4,
+            0.72
+          ));
+          vec3 lightDirection = normalize(vec3(sin(turn), 0.38, 0.82));
+          float diffuse = max(dot(surfaceNormal, lightDirection), 0.0);
+          float edgeLight = pow(1.0 - max(surfaceNormal.z, 0.0), 2.0);
+          float sweep = 0.92 + diffuse * 0.18 + edgeLight * 0.08;
+          vec3 reliefColor = source.rgb * sweep;
+          reliefColor += vec3(0.16, 0.085, 0.02) * edgeLight;
+          gl_FragColor = vec4(reliefColor, source.a * opacity);
         }
       `,
       transparent: true,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
-    const dragonGeometry = new THREE.PlaneGeometry(2.92, 5.2, 28, 36);
+    const dragonGeometry = new THREE.PlaneGeometry(2.92, 5.2, 56, 88);
     const dragon = new THREE.Mesh(dragonGeometry, dragonMaterial);
     dragon.position.set(0, 0.14, 0.02);
     dragon.renderOrder = 24;
@@ -420,6 +451,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       orbitRoot.position.set(0, compact ? -0.64 : -0.08, 0);
       centerpieceRoot.position.copy(orbitRoot.position);
       centerpieceRoot.scale.setScalar(compact ? 0.82 : 1);
+      dragonMaterial.uniforms.relief.value = compact ? 0.18 : 0.26;
     };
 
     const pointerDown = (event) => {
@@ -550,7 +582,8 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       }
 
       const centerpieceTime = isReducedMotion() ? 0 : elapsed;
-      centerpieceRoot.rotation.y = Math.sin(dragonRotation) * 0.07;
+      centerpieceRoot.rotation.x = Math.sin(dragonRotation * 0.5) * 0.025;
+      centerpieceRoot.rotation.y = Math.sin(dragonRotation) * (compact ? 0.1 : 0.16);
       centerpieceRoot.rotation.z = Math.sin(centerpieceTime * 0.42) * 0.012;
       centerpieceRoot.position.y = (compact ? -0.64 : -0.08) + Math.sin(centerpieceTime * 0.38) * 0.055;
       dragon.scale.setScalar(1 + Math.sin(centerpieceTime * 0.5) * 0.008);
