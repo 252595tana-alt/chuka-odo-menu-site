@@ -35,14 +35,17 @@ test("keeps the cinematic background video directly playable", async () => {
   assert.match(app, /preload="auto"/);
 });
 
-test("uses the dragon centerpiece and excludes retired and prohibited assets", async () => {
+test("uses the real 3D dragon centerpiece and excludes prohibited identities", async () => {
   const app = await readFile(new URL("src/App.jsx", projectUrl), "utf8");
   const html = await readFile(new URL("index.html", projectUrl), "utf8");
-  const dragon = await readFile(new URL("public/assets/odo/dragon-column.png", projectUrl));
+  const dragon = await readFile(new URL("public/models/golden-dragon.glb", projectUrl));
 
-  await access(new URL("public/assets/odo/dragon-column.png", projectUrl));
-  assert.equal(dragon[25], 6, "dragon PNG must retain a full RGBA color channel");
-  assert.ok(dragon.byteLength < 900_000, "dragon asset should stay below 900 KB");
+  await access(new URL("public/draco/draco_decoder.wasm", projectUrl));
+  assert.equal(dragon.subarray(0, 4).toString("ascii"), "glTF");
+  assert.ok(dragon.byteLength < 8_000_000, "dragon GLB should stay below 8 MB");
+  assert.match(app, /GLTFLoader/);
+  assert.match(app, /DRACOLoader/);
+  assert.match(app, /dragonPivot\.rotation\.y = dragonRotation/);
   assert.doesNotMatch(app, /steam-column\.png/);
   assert.doesNotMatch(app + html, /餃子の王将|Gyoza no Ohsho|OHSHO/i);
 });

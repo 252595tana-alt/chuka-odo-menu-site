@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import * as THREE from "three";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import {
   AUTO_ROTATION_SECONDS,
   clamp,
@@ -11,6 +13,8 @@ import {
 } from "./orbitMath.js";
 
 const assetUrl = (filename) => `${import.meta.env.BASE_URL}assets/odo/${filename}`;
+const modelUrl = (filename) => `${import.meta.env.BASE_URL}models/${filename}`;
+const dracoDecoderUrl = `${import.meta.env.BASE_URL}draco/`;
 
 const products = [
   {
@@ -214,11 +218,22 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       return undefined;
     }
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
     renderer.setClearColor(0x000000, 0);
 
     const orbitRoot = new THREE.Group();
     const centerpieceRoot = new THREE.Group();
     scene.add(centerpieceRoot, orbitRoot);
+
+    const hemisphereLight = new THREE.HemisphereLight(0xffe7bd, 0x061411, 0.62);
+    const keyLight = new THREE.DirectionalLight(0xffd48a, 4.2);
+    keyLight.position.set(3.4, 4.8, 5.6);
+    const rimLight = new THREE.PointLight(0xf07a4f, 5.4, 12, 2);
+    rimLight.position.set(-2.4, 0.8, 2.8);
+    const coolRimLight = new THREE.PointLight(0x73b9a9, 3.2, 10, 2);
+    coolRimLight.position.set(2.2, -1.1, -2.4);
+    scene.add(hemisphereLight, keyLight, rimLight, coolRimLight);
 
     const cardGeometry = createRoundedPlane(3.55, 2.35, 0.12);
     const borderGeometry = createRoundedPlane(3.67, 2.47, 0.14);
@@ -288,83 +303,63 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
     const arrowAxis = new THREE.Vector3(0, 1, 0);
     const arrowTangents = orbitArrows.map(() => new THREE.Vector3());
 
-    const textureLoader = new THREE.TextureLoader();
-    const dragonTexture = textureLoader.load(assetUrl("dragon-column.png"));
-    dragonTexture.colorSpace = THREE.SRGBColorSpace;
-    const dragonMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        map: { value: dragonTexture },
-        opacity: { value: 0 },
-        turn: { value: 0 },
-        relief: { value: 0.26 },
-        texelSize: { value: new THREE.Vector2(1 / 768, 1 / 1366) },
+    const dragonPivot = new THREE.Group();
+    dragonPivot.position.set(0, 0.14, 0.02);
+    centerpieceRoot.add(dragonPivot);
+
+    const dragonMaterials = [];
+    let dragonModel = null;
+    let disposed = false;
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath(dracoDecoderUrl);
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.setDRACOLoader(dracoLoader);
+    canvas.dataset.dragonStatus = "loading";
+    gltfLoader.load(
+      modelUrl("golden-dragon.glb"),
+      ({ scene: loadedDragon }) => {
+        if (disposed) return;
+
+        dragonModel = loadedDragon;
+        dragonModel.rotation.y = -Math.PI / 2;
+        dragonModel.updateMatrixWorld(true);
+
+        const initialBounds = new THREE.Box3().setFromObject(dragonModel);
+        const initialSize = initialBounds.getSize(new THREE.Vector3());
+        const normalizedScale = 4.75 / Math.max(initialSize.y, 0.001);
+        dragonModel.scale.setScalar(normalizedScale);
+        dragonModel.updateMatrixWorld(true);
+
+        const normalizedBounds = new THREE.Box3().setFromObject(dragonModel);
+        const normalizedCenter = normalizedBounds.getCenter(new THREE.Vector3());
+        dragonModel.position.sub(normalizedCenter);
+
+        dragonModel.traverse((child) => {
+          if (!child.isMesh) return;
+          const sourceMaterials = Array.isArray(child.material) ? child.material : [child.material];
+          const materials = sourceMaterials.map((material) => {
+            const polishedMaterial = material.clone();
+            polishedMaterial.transparent = true;
+            polishedMaterial.opacity = 0;
+            polishedMaterial.depthWrite = true;
+            if ("metalness" in polishedMaterial) polishedMaterial.metalness = Math.max(polishedMaterial.metalness, 0.42);
+            if ("roughness" in polishedMaterial) polishedMaterial.roughness = Math.min(polishedMaterial.roughness, 0.5);
+            dragonMaterials.push(polishedMaterial);
+            return polishedMaterial;
+          });
+          child.material = Array.isArray(child.material) ? materials : materials[0];
+          child.renderOrder = 24;
+        });
+
+        dragonPivot.add(dragonModel);
+        canvas.dataset.dragonStatus = "ready";
       },
-      vertexShader: `
-        uniform sampler2D map;
-        uniform float turn;
-        uniform float relief;
-        varying vec2 vUv;
-
-        void main() {
-          vUv = uv;
-          vec3 transformed = position;
-          vec4 surface = texture2D(map, uv);
-          float luminance = dot(surface.rgb, vec3(0.2126, 0.7152, 0.0722));
-          float reliefHeight = surface.a * (0.24 + luminance * 0.76);
-          float verticalPhase = (uv.y - 0.5) * 0.78;
-          float twist = turn + verticalPhase;
-          float width = 0.78 + abs(cos(twist)) * 0.22;
-          transformed.x *= width;
-          transformed.x += sin(twist + uv.y * 1.7) * 0.055;
-          transformed.z += sin(twist) * position.x * 0.2;
-          transformed.z += reliefHeight * relief;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform sampler2D map;
-        uniform float opacity;
-        uniform float turn;
-        uniform vec2 texelSize;
-        varying vec2 vUv;
-
-        float surfaceHeight(vec2 sampleUv) {
-          vec4 sampleColor = texture2D(map, sampleUv);
-          float sampleLuminance = dot(sampleColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-          return sampleColor.a * (0.24 + sampleLuminance * 0.76);
-        }
-
-        void main() {
-          vec4 source = texture2D(map, vUv);
-          if (source.a < 0.01) discard;
-
-          float leftHeight = surfaceHeight(vUv - vec2(texelSize.x * 2.0, 0.0));
-          float rightHeight = surfaceHeight(vUv + vec2(texelSize.x * 2.0, 0.0));
-          float lowerHeight = surfaceHeight(vUv - vec2(0.0, texelSize.y * 2.0));
-          float upperHeight = surfaceHeight(vUv + vec2(0.0, texelSize.y * 2.0));
-          vec3 surfaceNormal = normalize(vec3(
-            (leftHeight - rightHeight) * 4.4,
-            (lowerHeight - upperHeight) * 4.4,
-            0.72
-          ));
-          vec3 lightDirection = normalize(vec3(sin(turn), 0.38, 0.82));
-          float diffuse = max(dot(surfaceNormal, lightDirection), 0.0);
-          float edgeLight = pow(1.0 - max(surfaceNormal.z, 0.0), 2.0);
-          float sweep = 0.92 + diffuse * 0.18 + edgeLight * 0.08;
-          vec3 reliefColor = source.rgb * sweep;
-          reliefColor += vec3(0.16, 0.085, 0.02) * edgeLight;
-          gl_FragColor = vec4(reliefColor, source.a * opacity);
-        }
-      `,
-      transparent: true,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-    });
-    const dragonGeometry = new THREE.PlaneGeometry(2.92, 5.2, 56, 88);
-    const dragon = new THREE.Mesh(dragonGeometry, dragonMaterial);
-    dragon.position.set(0, 0.14, 0.02);
-    dragon.renderOrder = 24;
-    centerpieceRoot.add(dragon);
+      undefined,
+      (error) => {
+        canvas.dataset.dragonStatus = "error";
+        console.error("Unable to load the 3D dragon.", error);
+      },
+    );
 
     const emberCount = 110;
     const emberPositions = new Float32Array(emberCount * 3);
@@ -452,8 +447,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       camera.updateProjectionMatrix();
       orbitRoot.position.set(0, compact ? -0.64 : -0.08, 0);
       centerpieceRoot.position.copy(orbitRoot.position);
-      centerpieceRoot.scale.setScalar(compact ? 0.82 : 1);
-      dragonMaterial.uniforms.relief.value = compact ? 0.18 : 0.26;
+      centerpieceRoot.scale.setScalar(compact ? 1.08 : 1);
     };
 
     const pointerDown = (event) => {
@@ -585,14 +579,13 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
 
       const centerpieceTime = isReducedMotion() ? 0 : elapsed;
       centerpieceRoot.rotation.x = Math.sin(dragonRotation * 0.5) * 0.025;
-      centerpieceRoot.rotation.y = Math.sin(dragonRotation) * (compact ? 0.1 : 0.16);
+      dragonPivot.rotation.y = dragonRotation + Math.sin(centerpieceTime * 0.24) * 0.025;
       centerpieceRoot.rotation.z = Math.sin(centerpieceTime * 0.42) * 0.012;
       centerpieceRoot.position.y = (compact ? -0.64 : -0.08) + Math.sin(centerpieceTime * 0.38) * 0.055;
-      dragon.scale.setScalar(1 + Math.sin(centerpieceTime * 0.5) * 0.008);
+      dragonPivot.scale.setScalar(1 + Math.sin(centerpieceTime * 0.5) * 0.008);
       emberField.rotation.y = centerpieceTime * 0.2 - rotation * 0.18;
       emberField.position.y = 0.2 + Math.sin(centerpieceTime * 0.32) * 0.08;
-      dragonMaterial.uniforms.opacity.value = stageOpacity;
-      dragonMaterial.uniforms.turn.value = dragonRotation;
+      dragonMaterials.forEach((material) => { material.opacity = stageOpacity; });
       emberMaterial.opacity = stageOpacity * 0.88;
       trailMaterial.opacity = stageOpacity * 0.28;
       arrowMaterial.opacity = stageOpacity * 0.95;
@@ -602,6 +595,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
 
     render();
     return () => {
+      disposed = true;
       window.cancelAnimationFrame(frameId);
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("pointerenter", pointerEnter);
@@ -613,9 +607,15 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       canvas.removeEventListener("webglcontextlost", contextLost);
       window.removeEventListener("odo:select", selectProduct);
       textures.forEach((texture) => texture.dispose());
-      dragonTexture.dispose();
-      dragonGeometry.dispose();
-      dragonMaterial.dispose();
+      dragonModel?.traverse((child) => {
+        if (!child.isMesh) return;
+        child.geometry?.dispose();
+      });
+      dragonMaterials.forEach((material) => {
+        material.map?.dispose();
+        material.dispose();
+      });
+      dracoLoader.dispose();
       emberGeometry.dispose();
       emberMaterial.dispose();
       cardGeometry.dispose();
