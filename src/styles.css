@@ -3122,3 +3122,45 @@ a:focus-visible {
     min-height: 40px;
   }
 }
+
+/* Keep the supplied film visible beneath every stage of the experience. */
+.video-backdrop {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+.paper-noise {
+  background: rgba(7, 20, 18, 0.24);
+}
+
+.paper-noise::after {
+  background: rgba(214, 230, 222, 0.04);
+}
+
+.lattice-backdrop {
+  opacity: 0.1;
+}
+
+.order-stage {
+  background-color: rgba(7, 17, 15, 0.18);
+  background-image: none;
+}
+
+.order-stage::before {
+  background: rgba(3, 13, 11, 0.42);
+}
+
+@media (max-width: 760px) {
+  .paper-noise {
+    background: rgba(7, 20, 18, 0.28);
+  }
+
+  .lattice-backdrop {
+    opacity: 0.08;
+  }
+
+  .order-stage {
+    background-color: rgba(7, 17, 15, 0.22);
+  }
+}

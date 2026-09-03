@@ -678,9 +678,30 @@ export function App() {
   const [sceneReady, setSceneReady] = useState(false);
   const [webglUnavailable, setWebglUnavailable] = useState(() => new URLSearchParams(window.location.search).get("fallback") === "1");
   const experienceRef = useRef(null);
+  const videoRef = useRef(null);
   const menuRef = useRef(null);
   const menuToggleRef = useRef(null);
   const activeProduct = products[activeIndex];
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return undefined;
+
+    const ensurePlayback = () => {
+      video.muted = true;
+      if (video.paused) video.play().catch(() => {});
+    };
+
+    ensurePlayback();
+    window.addEventListener("pageshow", ensurePlayback);
+    window.addEventListener("focus", ensurePlayback);
+    document.addEventListener("visibilitychange", ensurePlayback);
+    return () => {
+      window.removeEventListener("pageshow", ensurePlayback);
+      window.removeEventListener("focus", ensurePlayback);
+      document.removeEventListener("visibilitychange", ensurePlayback);
+    };
+  }, []);
 
   useEffect(() => {
     let timerId = 0;
@@ -830,6 +851,7 @@ export function App() {
     <main ref={experienceRef} className="experience" data-phase={phase}>
       <NorenGate />
       <video
+        ref={videoRef}
         className="video-backdrop"
         src={assetUrl("background.mp4")}
         poster={assetUrl("paper-texture.jpg")}
@@ -841,6 +863,7 @@ export function App() {
         disablePictureInPicture
         tabIndex={-1}
         aria-hidden="true"
+        onCanPlay={(event) => event.currentTarget.play().catch(() => {})}
       />
       <div className="paper-noise" aria-hidden="true" />
       <div className="lattice-backdrop" aria-hidden="true" />
