@@ -4,6 +4,7 @@ import * as THREE from "three";
 import {
   AUTO_ROTATION_SECONDS,
   clamp,
+  getDragonScrollRotation,
   getOrbitProgress,
   getProductScrollProgress,
   getScrollRotation,
@@ -101,19 +102,19 @@ function createProductTexture(product, index) {
 
   const draw = (image) => {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "#e8eee9";
+    context.fillStyle = "#eceee9";
     context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "#0e4a42";
+    context.fillStyle = "#081310";
     context.fillRect(0, 0, canvas.width, 70);
     context.fillRect(0, canvas.height - 168, canvas.width, 168);
-    context.fillStyle = "#101817";
+    context.fillStyle = "#0d1714";
     context.fillRect(846, 70, canvas.width - 846, canvas.height - 238);
-    context.strokeStyle = "#e66a4c";
-    context.lineWidth = 18;
-    context.strokeRect(9, 9, canvas.width - 18, canvas.height - 18);
-    context.strokeStyle = "#9fc5b8";
-    context.lineWidth = 5;
-    context.strokeRect(24, 24, canvas.width - 48, canvas.height - 48);
+    context.strokeStyle = "#b99a68";
+    context.lineWidth = 10;
+    context.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+    context.strokeStyle = "#78938a";
+    context.lineWidth = 2;
+    context.strokeRect(18, 18, canvas.width - 36, canvas.height - 36);
 
     if (image) {
       const imageArea = { x: 38, y: 84, width: 786, height: 478 };
@@ -143,36 +144,36 @@ function createProductTexture(product, index) {
       );
     }
 
-    context.fillStyle = "#e8eee9";
+    context.fillStyle = "#f1eee5";
     context.font = '700 25px "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif';
     context.fillText(product.category, 48, 46);
     context.textAlign = "right";
     context.fillText(product.latin, 1148, 46);
     context.textAlign = "left";
 
-    context.fillStyle = "#f4f1e8";
-    context.font = '700 52px "Yu Mincho", "Hiragino Mincho ProN", serif';
+    context.fillStyle = "#f4f0e6";
+    context.font = '600 52px "Yu Mincho", "Hiragino Mincho ProN", serif';
     const titleLines = product.name.length > 7 ? [product.name.slice(0, 7), product.name.slice(7)] : [product.name];
     titleLines.forEach((line, lineIndex) => context.fillText(line, 872, 236 + lineIndex * 68));
-    context.fillStyle = "#e66a4c";
-    context.font = '700 20px "Arial", sans-serif';
+    context.fillStyle = "#c98770";
+    context.font = '600 20px "Arial", sans-serif';
     context.fillText(product.latin, 876, titleLines.length > 1 ? 402 : 324);
-    context.fillStyle = "#a9c9bf";
-    context.font = '700 20px "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif';
+    context.fillStyle = "#b9c9c3";
+    context.font = '600 20px "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif';
     context.fillText("香・火・余韻", 872, 474);
 
-    context.strokeStyle = "#e66a4c";
-    context.lineWidth = 3;
+    context.strokeStyle = "#b99a68";
+    context.lineWidth = 2;
     context.beginPath();
     context.moveTo(872, 504);
     context.lineTo(1142, 504);
     context.stroke();
 
-    context.fillStyle = "#f4f1e8";
-    context.font = '700 52px "Yu Mincho", "Hiragino Mincho ProN", serif';
+    context.fillStyle = "#f4f0e6";
+    context.font = '600 52px "Yu Mincho", "Hiragino Mincho ProN", serif';
     context.fillText(product.name, 58, 686);
     context.textAlign = "right";
-    context.font = '700 28px "Arial", sans-serif';
+    context.font = '500 28px "Arial", sans-serif';
     context.fillText(String(index + 1).padStart(2, "0"), 1140, 686);
     context.textAlign = "left";
     texture.needsUpdate = true;
@@ -183,26 +184,6 @@ function createProductTexture(product, index) {
   image.decoding = "async";
   image.onload = () => draw(image);
   image.src = product.image;
-  return texture;
-}
-
-function createBrandTexture() {
-  const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 320;
-  const context = canvas.getContext("2d");
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.textAlign = "center";
-  context.fillStyle = "#f4f1e8";
-  context.font = '700 76px "Yu Mincho", "Hiragino Mincho ProN", serif';
-  context.fillText("中華の", 256, 118);
-  context.font = '900 112px "Yu Mincho", "Hiragino Mincho ProN", serif';
-  context.fillText("王道", 256, 235);
-  context.fillStyle = "#e66a4c";
-  context.fillRect(176, 266, 160, 8);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.needsUpdate = true;
   return texture;
 }
 
@@ -234,8 +215,8 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
     renderer.setClearColor(0x000000, 0);
 
     const orbitRoot = new THREE.Group();
-    const steamRoot = new THREE.Group();
-    scene.add(steamRoot, orbitRoot);
+    const centerpieceRoot = new THREE.Group();
+    scene.add(centerpieceRoot, orbitRoot);
 
     const cardGeometry = createRoundedPlane(3.55, 2.35, 0.12);
     const borderGeometry = createRoundedPlane(3.67, 2.47, 0.14);
@@ -246,7 +227,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
     products.forEach((product, index) => {
       const group = new THREE.Group();
       const borderMaterial = new THREE.MeshBasicMaterial({
-        color: index === 0 ? 0xe66a4c : 0x0e4a42,
+        color: index === 0 ? 0xb99a68 : 0x284b45,
         transparent: true,
         opacity: 1,
         depthWrite: false,
@@ -279,7 +260,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
     const trailCurve = new THREE.CatmullRomCurve3(trailPoints, true, "catmullrom", 0.5);
     const trailGeometry = new THREE.TubeGeometry(trailCurve, 128, 0.008, 4, true);
     const trailMaterial = new THREE.MeshBasicMaterial({
-      color: 0xa9c9bf,
+      color: 0x9dbab0,
       transparent: true,
       opacity: 0,
       depthWrite: false,
@@ -291,7 +272,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
 
     const arrowGeometry = new THREE.ConeGeometry(0.14, 0.46, 8);
     const arrowMaterial = new THREE.MeshBasicMaterial({
-      color: 0xe66a4c,
+      color: 0xb99a68,
       transparent: true,
       opacity: 0,
       depthWrite: false,
@@ -306,33 +287,57 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
     const arrowTangents = orbitArrows.map(() => new THREE.Vector3());
 
     const textureLoader = new THREE.TextureLoader();
-    const steamTexture = textureLoader.load("/assets/odo/steam-column.png");
-    steamTexture.colorSpace = THREE.SRGBColorSpace;
-    steamTexture.wrapT = THREE.RepeatWrapping;
-    steamTexture.repeat.set(1, 0.82);
-    const steamMaterial = new THREE.MeshBasicMaterial({
-      map: steamTexture,
+    const dragonTexture = textureLoader.load("/assets/odo/dragon-column.png");
+    dragonTexture.colorSpace = THREE.SRGBColorSpace;
+    const dragonMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        map: { value: dragonTexture },
+        opacity: { value: 0 },
+        turn: { value: 0 },
+      },
+      vertexShader: `
+        uniform float turn;
+        varying vec2 vUv;
+
+        void main() {
+          vUv = uv;
+          vec3 transformed = position;
+          float verticalPhase = (uv.y - 0.5) * 0.78;
+          float twist = turn + verticalPhase;
+          float width = 0.78 + abs(cos(twist)) * 0.22;
+          transformed.x *= width;
+          transformed.x += sin(twist + uv.y * 1.7) * 0.055;
+          transformed.z += sin(twist) * position.x * 0.24;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D map;
+        uniform float opacity;
+        uniform float turn;
+        varying vec2 vUv;
+
+        void main() {
+          vec4 source = texture2D(map, vUv);
+          float glint = 0.94 + abs(cos(turn)) * 0.06;
+          gl_FragColor = vec4(source.rgb * glint, source.a * opacity);
+        }
+      `,
       transparent: true,
-      opacity: 0.3,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
     });
-    const steamGeometry = new THREE.PlaneGeometry(2.7, 6.9);
-    const steamPlanes = Array.from({ length: 3 }, (_, index) => {
-      const plane = new THREE.Mesh(steamGeometry, steamMaterial);
-      plane.position.set(0, 0.2, 0);
-      plane.rotation.y = index * (Math.PI / 3);
-      plane.renderOrder = 24;
-      steamRoot.add(plane);
-      return plane;
-    });
+    const dragonGeometry = new THREE.PlaneGeometry(2.92, 5.2, 28, 36);
+    const dragon = new THREE.Mesh(dragonGeometry, dragonMaterial);
+    dragon.position.set(0, 0.14, 0.02);
+    dragon.renderOrder = 24;
+    centerpieceRoot.add(dragon);
 
     const emberCount = 110;
     const emberPositions = new Float32Array(emberCount * 3);
     const emberColors = new Float32Array(emberCount * 3);
-    const emberGold = new THREE.Color(0xb7ded1);
-    const emberRed = new THREE.Color(0xff765b);
+    const emberGold = new THREE.Color(0xc9ad79);
+    const emberRed = new THREE.Color(0x83aa9d);
     for (let index = 0; index < emberCount; index += 1) {
       const progress = index / (emberCount - 1);
       const angle = progress * Math.PI * 10 + (index % 7) * 0.43;
@@ -359,48 +364,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
     });
     const emberField = new THREE.Points(emberGeometry, emberMaterial);
     emberField.renderOrder = 23;
-    steamRoot.add(emberField);
-
-    const corePoints = Array.from({ length: 42 }, (_, index) => {
-      const progress = index / 41;
-      const y = -3.08 + progress * 6.18;
-      const taper = 0.08 + Math.sin(progress * Math.PI) * 0.16;
-      return new THREE.Vector3(
-        Math.sin(progress * Math.PI * 7.5) * taper,
-        y,
-        Math.cos(progress * Math.PI * 6.5) * taper * 0.72,
-      );
-    });
-    const coreCurve = new THREE.CatmullRomCurve3(corePoints, false, "catmullrom", 0.5);
-    const coreGeometry = new THREE.TubeGeometry(coreCurve, 120, 0.022, 8, false);
-    const coreMaterial = new THREE.MeshBasicMaterial({
-      color: 0xff765b,
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    });
-    const steamCore = new THREE.Mesh(coreGeometry, coreMaterial);
-    steamCore.renderOrder = 23;
-    steamRoot.add(steamCore);
-
-    const discMaterial = new THREE.MeshBasicMaterial({ color: 0x0e4a42, transparent: true, opacity: 0.96 });
-    const disc = new THREE.Mesh(new THREE.CircleGeometry(0.68, 64), discMaterial);
-    disc.position.set(0, 0.1, 0.08);
-    disc.renderOrder = 25;
-    steamRoot.add(disc);
-
-    const logoTexture = createBrandTexture();
-    logoTexture.colorSpace = THREE.SRGBColorSpace;
-    const logoMaterial = new THREE.MeshBasicMaterial({
-      map: logoTexture,
-      transparent: true,
-      depthWrite: false,
-    });
-    const logo = new THREE.Mesh(new THREE.PlaneGeometry(1.18, 0.78), logoMaterial);
-    logo.position.set(0, 0.1, 0.12);
-    logo.renderOrder = 26;
-    steamRoot.add(logo);
+    centerpieceRoot.add(emberField);
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const forceReducedMotion = new URLSearchParams(window.location.search).get("reduced") === "1";
@@ -409,6 +373,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
     let manualOffset = 0;
     let autoOffset = 0;
     let rotation = 0;
+    let dragonRotation = 0;
     let frameId = 0;
     let lastActive = -1;
     let compact = false;
@@ -453,8 +418,8 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       camera.position.set(0, 0, compact ? 10.8 : 9.2);
       camera.updateProjectionMatrix();
       orbitRoot.position.set(0, compact ? -0.64 : -0.08, 0);
-      steamRoot.position.copy(orbitRoot.position);
-      steamRoot.scale.setScalar(compact ? 0.82 : 1);
+      centerpieceRoot.position.copy(orbitRoot.position);
+      centerpieceRoot.scale.setScalar(compact ? 0.82 : 1);
     };
 
     const pointerDown = (event) => {
@@ -519,6 +484,8 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       }
       const targetRotation = isReducedMotion() ? 0 : getScrollRotation(pageProgress) + autoOffset + manualOffset;
       rotation += (targetRotation - rotation) * 0.085;
+      const targetDragonRotation = isReducedMotion() ? 0 : getDragonScrollRotation(pageProgress);
+      dragonRotation += (targetDragonRotation - dragonRotation) * 0.075;
 
       const radiusX = compact ? 1.56 : 2.72;
       const radiusY = compact ? 0.42 : 0.54;
@@ -558,7 +525,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
           group.position.y += 0.05;
           group.position.z += 0.15;
         }
-        cardMaterials[index][0].color.setHex(isActive ? 0xe66a4c : 0x0e4a42);
+        cardMaterials[index][0].color.setHex(isActive ? 0xb99a68 : 0x284b45);
       });
 
       orbitArrows.forEach((arrow, index) => {
@@ -582,25 +549,16 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
         activeCallbackRef.current?.(frontIndex);
       }
 
-      const steamTime = isReducedMotion() ? 0 : elapsed;
-      steamRoot.rotation.y = rotation * -0.32;
-      steamRoot.rotation.z = Math.sin(steamTime * 0.52) * 0.012;
-      steamRoot.position.y = (compact ? -0.64 : -0.08) + Math.sin(steamTime * 0.45) * 0.08;
-      steamPlanes.forEach((plane, index) => {
-        plane.rotation.z = Math.sin(steamTime * 0.42 + index * 2.1) * 0.014;
-        plane.position.y = 0.2 + Math.sin(steamTime * 0.36 + index * 1.7) * 0.035;
-      });
-      emberField.rotation.y = steamTime * 0.2 - rotation * 0.18;
-      emberField.position.y = 0.2 + Math.sin(steamTime * 0.32) * 0.08;
-      steamCore.rotation.y = steamTime * -0.13 - rotation * 0.22;
-      steamCore.rotation.z = Math.sin(steamTime * 0.28) * 0.018;
-      steamCore.position.y = 0.18 + Math.sin(steamTime * 0.24) * 0.06;
-      if (!isReducedMotion()) steamTexture.offset.y = (elapsed * 0.055) % 1;
-      steamMaterial.opacity = stageOpacity * (compact ? 0.28 : 0.34);
+      const centerpieceTime = isReducedMotion() ? 0 : elapsed;
+      centerpieceRoot.rotation.y = Math.sin(dragonRotation) * 0.07;
+      centerpieceRoot.rotation.z = Math.sin(centerpieceTime * 0.42) * 0.012;
+      centerpieceRoot.position.y = (compact ? -0.64 : -0.08) + Math.sin(centerpieceTime * 0.38) * 0.055;
+      dragon.scale.setScalar(1 + Math.sin(centerpieceTime * 0.5) * 0.008);
+      emberField.rotation.y = centerpieceTime * 0.2 - rotation * 0.18;
+      emberField.position.y = 0.2 + Math.sin(centerpieceTime * 0.32) * 0.08;
+      dragonMaterial.uniforms.opacity.value = stageOpacity;
+      dragonMaterial.uniforms.turn.value = dragonRotation;
       emberMaterial.opacity = stageOpacity * 0.88;
-      coreMaterial.opacity = stageOpacity * 0.48;
-      discMaterial.opacity = stageOpacity * 0.95;
-      logoMaterial.opacity = stageOpacity;
       trailMaterial.opacity = stageOpacity * 0.28;
       arrowMaterial.opacity = stageOpacity * 0.95;
       renderer.render(scene, camera);
@@ -620,20 +578,17 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       canvas.removeEventListener("webglcontextlost", contextLost);
       window.removeEventListener("odo:select", selectProduct);
       textures.forEach((texture) => texture.dispose());
-      steamTexture.dispose();
-      steamMaterial.dispose();
+      dragonTexture.dispose();
+      dragonGeometry.dispose();
+      dragonMaterial.dispose();
       emberGeometry.dispose();
       emberMaterial.dispose();
-      coreGeometry.dispose();
-      coreMaterial.dispose();
-      logoTexture.dispose();
       cardGeometry.dispose();
       borderGeometry.dispose();
       trailGeometry.dispose();
       trailMaterial.dispose();
       arrowGeometry.dispose();
       arrowMaterial.dispose();
-      steamGeometry.dispose();
       renderer.dispose();
     };
   }, []);
@@ -685,9 +640,51 @@ export function App() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [phase, setPhase] = useState("hero");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
   const [webglUnavailable, setWebglUnavailable] = useState(() => new URLSearchParams(window.location.search).get("fallback") === "1");
   const experienceRef = useRef(null);
+  const menuRef = useRef(null);
+  const menuToggleRef = useRef(null);
   const activeProduct = products[activeIndex];
+
+  useEffect(() => {
+    let timerId = 0;
+    const revealScene = () => setSceneReady(true);
+    const revealAfterLoad = () => {
+      timerId = window.setTimeout(revealScene, 240);
+    };
+
+    if (document.readyState === "complete") revealAfterLoad();
+    else window.addEventListener("load", revealAfterLoad, { once: true });
+    window.addEventListener("scroll", revealScene, { once: true, passive: true });
+    window.addEventListener("pointerdown", revealScene, { once: true, passive: true });
+    window.addEventListener("touchstart", revealScene, { once: true, passive: true });
+
+    return () => {
+      window.clearTimeout(timerId);
+      window.removeEventListener("load", revealAfterLoad);
+      window.removeEventListener("scroll", revealScene);
+      window.removeEventListener("pointerdown", revealScene);
+      window.removeEventListener("touchstart", revealScene);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const frameId = window.requestAnimationFrame(() => {
+      menuRef.current?.querySelector("button")?.focus();
+    });
+    const closeOnEscape = (event) => {
+      if (event.key !== "Escape") return;
+      setMenuOpen(false);
+      menuToggleRef.current?.focus();
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     const experience = experienceRef.current;
@@ -784,7 +781,8 @@ export function App() {
 
   const scrollToProgress = (progress) => {
     const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-    window.scrollTo({ top: maxScroll * progress, behavior: "smooth" });
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: maxScroll * progress, behavior: reduceMotion ? "auto" : "smooth" });
   };
 
   const goToProduct = (index) => {
@@ -798,13 +796,13 @@ export function App() {
       <NorenGate />
       <video
         className="video-backdrop"
-        src="/assets/odo/background.mp4"
+        src={sceneReady ? "/assets/odo/background.mp4" : undefined}
         poster="/assets/odo/paper-texture.jpg"
         autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         disablePictureInPicture
         tabIndex={-1}
         aria-hidden="true"
@@ -818,14 +816,16 @@ export function App() {
           <strong>中華の王道</strong>
           <small>CHUKA NO ODO</small>
         </button>
-        <nav className={menuOpen ? "is-open" : ""} aria-label="メインメニュー">
+        <nav ref={menuRef} id="main-menu" className={menuOpen ? "is-open" : ""} aria-label="メインメニュー">
           <button type="button" onClick={() => { scrollToProgress(0.3); setMenuOpen(false); }}>料理を選ぶ</button>
         </nav>
         <button
+          ref={menuToggleRef}
           className="menu-toggle"
           type="button"
           aria-label={menuOpen ? "メニューを閉じる" : "メニューを開く"}
           aria-expanded={menuOpen}
+          aria-controls="main-menu"
           onClick={() => setMenuOpen((current) => !current)}
         >
           {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
@@ -834,19 +834,27 @@ export function App() {
       </header>
 
       <section id="menu" className="hero-stage" aria-label="3Dメニュー体験">
+        <h1 className="sr-only">中華の王道 3Dメニュー体験</h1>
 
         {webglUnavailable ? (
           <div className="orbit-fallback" aria-label="おすすめメニュー5品">
             {products.map((product, index) => (
               <button key={product.id} type="button" onClick={() => goToProduct(index)} aria-current={index === activeIndex ? "true" : undefined}>
-                <img src={product.image} alt={product.name} />
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  width="1536"
+                  height="1024"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                />
                 <strong>{product.name}</strong>
               </button>
             ))}
           </div>
-        ) : (
+        ) : sceneReady ? (
           <FoodOrbitCanvas onActiveChange={setActiveIndex} onUnavailable={() => setWebglUnavailable(true)} />
-        )}
+        ) : null}
 
         <aside className="menu-selector" aria-label="おすすめメニュー選択">
           <p>今日、何を食べる？</p>

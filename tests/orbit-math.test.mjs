@@ -3,9 +3,11 @@ import test from "node:test";
 
 import {
   AUTO_ROTATION_SECONDS,
+  DRAGON_SCROLL_ROTATIONS,
   ORBIT_SCROLL_ROTATIONS,
   ORBIT_SCROLL_SPAN,
   ORBIT_SCROLL_START,
+  getDragonScrollRotation,
   getFrontProductIndex,
   getProductScrollProgress,
   getScrollRotation,
@@ -15,6 +17,12 @@ test("the scroll experience produces exactly two full rotations", () => {
   assert.equal(ORBIT_SCROLL_ROTATIONS, 2);
   assert.ok(Math.abs(getScrollRotation(ORBIT_SCROLL_START)) < 1e-10);
   assert.ok(Math.abs(getScrollRotation(ORBIT_SCROLL_START + ORBIT_SCROLL_SPAN) + Math.PI * 4) < 1e-10);
+});
+
+test("the dragon completes one synchronized turn during the card sequence", () => {
+  assert.equal(DRAGON_SCROLL_ROTATIONS, 1);
+  assert.ok(Math.abs(getDragonScrollRotation(ORBIT_SCROLL_START)) < 1e-10);
+  assert.ok(Math.abs(getDragonScrollRotation(ORBIT_SCROLL_START + ORBIT_SCROLL_SPAN) + Math.PI * 2) < 1e-10);
 });
 
 test("each menu selection maps its product to the center-front angle", () => {

@@ -6,6 +6,7 @@ export const AUTO_ROTATION_SECONDS = Object.freeze({
 export const ORBIT_SCROLL_START = 0.33;
 export const ORBIT_SCROLL_SPAN = 0.26;
 export const ORBIT_SCROLL_ROTATIONS = 2;
+export const DRAGON_SCROLL_ROTATIONS = 1;
 
 export const clamp = (value, min = 0, max = 1) => Math.min(Math.max(value, min), max);
 
@@ -15,6 +16,10 @@ export const getOrbitProgress = (pageProgress) => (
 
 export const getScrollRotation = (pageProgress) => (
   getOrbitProgress(pageProgress) * -Math.PI * 2 * ORBIT_SCROLL_ROTATIONS
+);
+
+export const getDragonScrollRotation = (pageProgress) => (
+  getScrollRotation(pageProgress) * (DRAGON_SCROLL_ROTATIONS / ORBIT_SCROLL_ROTATIONS)
 );
 
 export const getProductScrollProgress = (index, productCount = 5) => {
