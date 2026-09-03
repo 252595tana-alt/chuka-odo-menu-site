@@ -829,13 +829,13 @@ export function App() {
       <NorenGate />
       <video
         className="video-backdrop"
-        src={sceneReady ? "/assets/odo/background.mp4" : undefined}
+        src="/assets/odo/background.mp4"
         poster="/assets/odo/paper-texture.jpg"
         autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         disablePictureInPicture
         tabIndex={-1}
         aria-hidden="true"

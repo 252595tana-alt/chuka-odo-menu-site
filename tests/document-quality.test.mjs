@@ -24,6 +24,16 @@ test("keeps the interactive menu accessible without relying on WebGL", async () 
   assert.match(app, /className="orbit-fallback"/);
 });
 
+test("keeps the cinematic background video directly playable", async () => {
+  const app = await readFile(new URL("src/App.jsx", projectUrl), "utf8");
+
+  assert.match(app, /src="\/assets\/odo\/background\.mp4"/);
+  assert.match(app, /autoPlay/);
+  assert.match(app, /muted/);
+  assert.match(app, /playsInline/);
+  assert.match(app, /preload="auto"/);
+});
+
 test("uses the dragon centerpiece and excludes retired and prohibited assets", async () => {
   const app = await readFile(new URL("src/App.jsx", projectUrl), "utf8");
   const html = await readFile(new URL("index.html", projectUrl), "utf8");
