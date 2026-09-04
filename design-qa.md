@@ -357,4 +357,15 @@
 - Console and build evidence: browser logs contain no warnings or errors; all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
 - Findings: no actionable P0, P1, or P2 mismatch remains.
 
+## Lower-edge fluid placement follow-up
+
+- Direction: keep the jade/celadon fluid artwork in the lower portion of both closing screens instead of surrounding the frame.
+- Implementation: all four shader blooms now originate below the horizontal center, and a lower-field mask fades both ambient ink and pointer injection before they can enter the upper half. Gold texture speckles use the same lower-only mask.
+- Fallback parity: every CSS gradient and drifting fallback bloom is anchored below the viewport center, preserving the same bottom-up silhouette without WebGL.
+- Desktop evidence: at 1440 × 900 the upper field remains visually clear on both the closing-copy and final-CTA screens; the active fluid is confined to the lower portion and browser logs contain no warnings or errors.
+- Responsive evidence: at 390 × 844 the final CTA remains 280 × 54 and centered at 188 × 422, the lower artwork stays clear of the action, and the page introduces no horizontal overflow.
+- Reduced Motion and fallback evidence: `?reduced=1` keeps the bottom composition in deterministic static mode with zero-duration transitions. `?fallback=1` hides the WebGL canvas and renders the matching lower-anchored CSS artwork with no horizontal overflow.
+- Build evidence: all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
+- Findings: no actionable P0, P1, or P2 mismatch remains.
+
 final result: passed

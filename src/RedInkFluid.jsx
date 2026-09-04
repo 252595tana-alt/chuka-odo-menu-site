@@ -76,14 +76,15 @@ const fragmentShaderSource = `
 
     vec2 pointerPoint = (uPointer - 0.5) * vec2(aspect, 1.0);
     vec2 pointerDelta = point - pointerPoint;
-    float pointerWake = exp(-dot(pointerDelta, pointerDelta) * 7.0) * uPointerEnergy;
+    float lowerField = 1.0 - smoothstep(-0.30, 0.14, point.y);
+    float pointerWake = exp(-dot(pointerDelta, pointerDelta) * 7.0) * uPointerEnergy * lowerField;
     float pointerLength = max(length(pointerDelta), 0.04);
     warp += vec2(-pointerDelta.y, pointerDelta.x) / pointerLength * pointerWake * 0.34;
 
-    float ink = bloom(point, vec2(-aspect * 0.57, 0.32), warp, 10.4, time * 0.23);
-    ink = max(ink, bloom(point, vec2(aspect * 0.58, 0.24), -warp, 10.8, time * 0.19 + 1.7));
-    ink = max(ink, bloom(point, vec2(-aspect * 0.38, -0.58), warp.yx, 11.6, time * 0.21 + 3.1));
-    ink = max(ink, bloom(point, vec2(aspect * 0.42, -0.60), -warp.yx, 11.2, time * 0.17 + 5.0));
+    float ink = bloom(point, vec2(-aspect * 0.58, -0.52), warp, 9.4, time * 0.23);
+    ink = max(ink, bloom(point, vec2(-aspect * 0.22, -0.62), -warp, 12.2, time * 0.19 + 1.7));
+    ink = max(ink, bloom(point, vec2(aspect * 0.22, -0.58), warp.yx, 10.8, time * 0.21 + 3.1));
+    ink = max(ink, bloom(point, vec2(aspect * 0.58, -0.50), -warp.yx, 9.8, time * 0.17 + 5.0));
     ink = max(ink, pointerWake * (0.34 + fbm(point * 7.0 + time * 0.08) * 0.42));
 
     float filaments = smoothstep(0.56, 0.88, fbm(point * 3.2 + warp * 2.5 + time * 0.025));
@@ -102,7 +103,7 @@ const fragmentShaderSource = `
 
     float centerQuiet = 1.0 - 0.34 * exp(-dot(point * vec2(0.72, 2.8), point * vec2(0.72, 2.8)) * 1.8);
     float inkBody = smoothstep(0.12, 0.68, ink);
-    float alpha = clamp((inkBody * 0.54 + rim * 0.25 + filaments * 0.15) * centerQuiet, 0.0, 0.82);
+    float alpha = clamp((inkBody * 0.54 + rim * 0.25 + filaments * 0.15) * centerQuiet * lowerField, 0.0, 0.82);
     gl_FragColor = vec4(color * alpha, alpha);
   }
 `;

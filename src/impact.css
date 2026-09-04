@@ -980,6 +980,7 @@ html[data-impact-noren="closed"] .impact-cursor {
   background-image: radial-gradient(circle, rgba(212, 176, 97, 0.28) 0 0.7px, transparent 0.8px);
   background-size: 5px 5px;
   mix-blend-mode: soft-light;
+  mask-image: linear-gradient(to bottom, transparent 0 48%, #000 76%);
   opacity: 0.2;
 }
 
@@ -1003,10 +1004,10 @@ html[data-impact-noren="closed"] .impact-cursor {
   display: none;
   overflow: hidden;
   background:
-    radial-gradient(circle at 12% 34%, rgba(8, 94, 70, 0.58), transparent 30%),
-    radial-gradient(circle at 87% 28%, rgba(35, 141, 103, 0.46), transparent 31%),
-    radial-gradient(circle at 26% 91%, rgba(4, 63, 54, 0.74), transparent 36%),
-    radial-gradient(circle at 80% 91%, rgba(202, 153, 66, 0.36), transparent 35%);
+    radial-gradient(circle at 9% 94%, rgba(8, 94, 70, 0.62), transparent 34%),
+    radial-gradient(circle at 38% 108%, rgba(35, 141, 103, 0.52), transparent 38%),
+    radial-gradient(circle at 67% 98%, rgba(4, 63, 54, 0.76), transparent 37%),
+    radial-gradient(circle at 94% 104%, rgba(202, 153, 66, 0.4), transparent 36%);
   filter: saturate(1.12);
 }
 
@@ -1029,10 +1030,10 @@ html[data-impact-noren="closed"] .impact-cursor {
   animation: closing-fluid-drift 14s ease-in-out infinite alternate;
 }
 
-.closing-fluid__fallback i:nth-child(1) { top: -23vmax; left: -15vmax; }
-.closing-fluid__fallback i:nth-child(2) { top: -21vmax; right: -17vmax; animation-delay: -4s; animation-direction: alternate-reverse; }
-.closing-fluid__fallback i:nth-child(3) { bottom: -25vmax; left: -12vmax; animation-delay: -7s; }
-.closing-fluid__fallback i:nth-child(4) { right: -10vmax; bottom: -26vmax; animation-delay: -10s; animation-direction: alternate-reverse; }
+.closing-fluid__fallback i:nth-child(1) { bottom: -27vmax; left: -15vmax; }
+.closing-fluid__fallback i:nth-child(2) { right: -17vmax; bottom: -29vmax; animation-delay: -4s; animation-direction: alternate-reverse; }
+.closing-fluid__fallback i:nth-child(3) { bottom: -30vmax; left: 19%; animation-delay: -7s; }
+.closing-fluid__fallback i:nth-child(4) { right: 12%; bottom: -28vmax; animation-delay: -10s; animation-direction: alternate-reverse; }
 
 @keyframes closing-fluid-drift {
   from { transform: rotate(-8deg) scale(0.92) translate3d(-2%, 1%, 0); }

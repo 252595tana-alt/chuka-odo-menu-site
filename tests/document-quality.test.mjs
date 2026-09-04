@@ -166,7 +166,11 @@ test("keeps the final scene focused on its closing line and visit CTA", async ()
   assert.match(redInkFluid, /vec3 celadon = vec3\(0\.34, 0\.78, 0\.62\)/);
   assert.match(redInkFluid, /vec3 amberGold = vec3\(0\.92, 0\.58, 0\.18\)/);
   assert.doesNotMatch(redInkFluid, /oxblood|crimson|vermilion/);
+  assert.match(redInkFluid, /float lowerField = 1\.0 - smoothstep\(-0\.30, 0\.14, point\.y\)/);
+  assert.match(redInkFluid, /centerQuiet \* lowerField/);
   assert.match(impactCss, /\.closing-fluid\[data-fluid-mode="fallback"\] \.closing-fluid__fallback \{\s*display: block;/);
+  assert.match(impactCss, /mask-image: linear-gradient\(to bottom, transparent 0 48%, #000 76%\)/);
+  assert.doesNotMatch(impactCss, /\.closing-fluid__fallback i:nth-child\([1-4]\) \{ top:/);
   assert.match(impactCss, /\.experience\[data-reduced-motion="true"\] \.closing-fluid,/);
 });
 
