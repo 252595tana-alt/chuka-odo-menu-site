@@ -1214,7 +1214,7 @@ export function App() {
           <p>{activeProduct.copy}</p>
           {activeProduct.kind === "cta" ? (
             <button className="active-detail__cta" type="button" onClick={() => scrollToProgress(0.985)}>
-              お席のご案内へ <span aria-hidden="true">↗</span>
+              お店に行く <span aria-hidden="true">↗</span>
             </button>
           ) : null}
         </div>

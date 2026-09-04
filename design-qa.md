@@ -403,4 +403,14 @@
 - Console and build evidence: desktop, mobile, Reduced Motion, and WebGL fallback browser logs contain no warnings or errors; all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
 - Findings: the initial timer-only version could release early when CSS animation startup was delayed by heavy rendering. The final-glyph completion event and immediate scroll-boundary clamp correct that P1 timing defect; no actionable P0, P1, or P2 mismatch remains.
 
+## Visit CTA label consistency follow-up
+
+- Direction: use the exact visible action label `お店に行く` across every visit CTA, including the tenth spiral-panel detail action shown in the supplied crop and the separate final Maps CTA.
+- Implementation: the tenth panel, fallback panel, menu selector, active-detail CTA, and final Maps CTA now all expose `お店に行く`; the prior actionable label `お席のご案内へ` is absent. Descriptive supporting copy and section labels remain unchanged because they are not CTA controls.
+- Desktop evidence: at the tenth-panel checkpoint the active product heading and its gold action both read `お店に行く`, while the final-stage link reports the same text. The layout retains zero positive horizontal overflow.
+- Responsive evidence: at 390 × 844 CSS px both visit controls expose the same label and the document retains zero positive horizontal overflow.
+- Accessibility and console evidence: the final Maps link keeps its descriptive `お店に行く（Google マップを開く）` accessible name; browser logs contain no warnings or errors.
+- Build evidence: all 18 automated tests pass; the production build and deployment verification are recorded with the publishing commit.
+- Findings: CTA wording is now consistent across the complete visit journey; no actionable P0, P1, or P2 mismatch remains.
+
 final result: passed

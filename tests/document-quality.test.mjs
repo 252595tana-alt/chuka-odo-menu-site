@@ -135,6 +135,8 @@ test("keeps the final scene focused on its closing line and visit CTA", async ()
   assert.match(app, /const closingMessage = "今日の一皿を、心ゆくまで。"/);
   assert.match(app, /<section id="contact" className="order-stage" aria-labelledby="order-title">[\s\S]*<h2 id="order-title" aria-label=\{closingMessage\}>[\s\S]*Array\.from\(closingMessage\)[\s\S]*className="order-title__char"[\s\S]*<\/h2>\s*<\/section>/);
   assert.match(app, /<section id="visit" className="visit-stage" aria-label="お店へのご案内">\s*<a[\s\S]*className="order-visit-cta breathing-glow"[\s\S]*<span>お店に行く<\/span>[\s\S]*<\/a>\s*<\/section>/);
+  assert.match(app, /className="active-detail__cta"[\s\S]*>\s*お店に行く <span aria-hidden="true">↗<\/span>/);
+  assert.doesNotMatch(app, /お席のご案内へ <span aria-hidden="true">↗<\/span>/);
   assert.doesNotMatch(app, /今日の一皿を、<br \/>心ゆくまで。/);
   assert.match(impactCss, /\.order-stage h2 \{\s*max-width: none;[\s\S]*white-space: nowrap;/);
   assert.match(impactCss, /\.order-stage h2 \{[\s\S]*font-size: clamp\(52px, 7\.6vw, 112px\);[\s\S]*transform: translate3d\(0, calc\(\(1 - var\(--impact-order\)\) \* 74svh\), 0\);/);
