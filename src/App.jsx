@@ -30,6 +30,7 @@ import {
 const assetUrl = (filename) => `${import.meta.env.BASE_URL}assets/odo/${filename}`;
 const modelUrl = (filename) => `${import.meta.env.BASE_URL}models/${filename}`;
 const dracoDecoderUrl = `${import.meta.env.BASE_URL}draco/`;
+const closingMessage = "今日の一皿を、心ゆくまで。";
 
 const products = [
   {
@@ -977,6 +978,7 @@ export function App() {
       experience.style.setProperty("--story-opacity", "0");
       experience.style.setProperty("--order-opacity", orderIn.toFixed(3));
       experience.style.setProperty("--visit-opacity", visitIn.toFixed(3));
+      experience.dataset.orderTitleBlur = orderIn > 0.08 ? "active" : "idle";
       const nextPhase = progress < ORDER_SCROLL_START
         ? "hero"
         : progress < VISIT_SCROLL_START ? "order" : "visit";
@@ -995,6 +997,7 @@ export function App() {
       window.cancelAnimationFrame(frameId);
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
+      delete experience.dataset.orderTitleBlur;
     };
   }, []);
 
@@ -1139,7 +1142,18 @@ export function App() {
       </section>
 
       <section id="contact" className="order-stage" aria-labelledby="order-title">
-        <h2 id="order-title">今日の一皿を、心ゆくまで。</h2>
+        <h2 id="order-title" aria-label={closingMessage}>
+          {Array.from(closingMessage).map((character, index) => (
+            <span
+              className="order-title__char"
+              style={{ "--blur-index": index }}
+              aria-hidden="true"
+              key={`${character}-${index}`}
+            >
+              {character}
+            </span>
+          ))}
+        </h2>
       </section>
 
       <section id="visit" className="visit-stage" aria-label="お店へのご案内">

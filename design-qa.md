@@ -368,4 +368,16 @@
 - Build evidence: all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
 - Findings: no actionable P0, P1, or P2 mismatch remains.
 
+## Per-character BLUR closing-title follow-up
+
+- Source behavior: the supplied Type Motion `BLUR` preset reveals individual glyphs from zero opacity, `blur(20px)`, and `0.5em` tracking to a sharp final setting over 1100ms, staggered left-to-right by 45ms.
+- Implementation: the exact closing message is split into 13 presentation-only glyph spans beneath one accessible `aria-label`. Entering the order screen triggers the sequence; returning below its threshold resets it so re-entering replays the entrance.
+- Layout safeguard: each glyph keeps a fixed `0.915em` advance so the reference's animated tracking cannot widen the one-line Japanese composition or move its center while it resolves.
+- Desktop evidence: at 1440 × 900 the first glyph measures opacity `0.610207` and `blur(7.79586px)` while the middle and final glyphs remain at zero opacity and `blur(20px)`; after settling, every glyph reports opacity `1` and `blur(0px)`. The heading remains 1302px wide at x=62 throughout with no horizontal overflow.
+- Responsive evidence: at 390 × 844 the heading stays 343px wide at x=16 during and after the sequence, retains the complete one-line message, and introduces no horizontal overflow.
+- Reduced Motion evidence: `?reduced=1` presents the complete heading immediately with no animation, opacity `1`, and no filter. WebGL fallback retains the BLUR entrance independently of the lower-edge CSS fluid artwork.
+- Accessibility and console evidence: the semantic h2 exposes the exact Japanese message while decorative character spans are hidden from assistive technology; browser logs contain no warnings or errors.
+- Build evidence: all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
+- Findings: the initial expanding line-box issue was corrected with fixed glyph advances; no actionable P0, P1, or P2 mismatch remains.
+
 final result: passed
