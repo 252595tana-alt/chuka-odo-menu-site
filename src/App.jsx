@@ -31,6 +31,9 @@ const assetUrl = (filename) => `${import.meta.env.BASE_URL}assets/odo/${filename
 const modelUrl = (filename) => `${import.meta.env.BASE_URL}models/${filename}`;
 const dracoDecoderUrl = `${import.meta.env.BASE_URL}draco/`;
 const closingMessage = "今日の一皿を、心ゆくまで。";
+const ORDER_TITLE_HOLD_PROGRESS = 0.972;
+const ORDER_TITLE_ANIMATION_MS = 1100 + (closingMessage.length - 1) * 45;
+const ORDER_TITLE_HOLD_FALLBACK_MS = ORDER_TITLE_ANIMATION_MS + 10000;
 
 const products = [
   {
@@ -890,11 +893,89 @@ export function App() {
 
   useEffect(() => {
     const experience = experienceRef.current;
+    const lastOrderTitleChar = experience.querySelector(".order-title__char:last-child");
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frameId = 0;
+    let orderTitleHoldTimer = 0;
+    let orderTitleHoldStarted = false;
+    let orderTitleHoldComplete = false;
+
+    const resetOrderTitleHold = () => {
+      window.clearTimeout(orderTitleHoldTimer);
+      orderTitleHoldTimer = 0;
+      orderTitleHoldStarted = false;
+      orderTitleHoldComplete = false;
+      experience.dataset.orderTitleHold = "ready";
+      experience.dataset.orderTitleBlur = "idle";
+    };
+
+    const releaseOrderTitleHold = () => {
+      if (!orderTitleHoldStarted) return;
+      window.clearTimeout(orderTitleHoldTimer);
+      orderTitleHoldTimer = 0;
+      orderTitleHoldStarted = false;
+      orderTitleHoldComplete = true;
+      experience.dataset.orderTitleHold = "released";
+      experience.dataset.orderTitleBlur = "active";
+      requestUpdate();
+    };
+
+    const handleOrderTitleAnimationEnd = (event) => {
+      if (event.animationName === "order-title-blur-in") {
+        releaseOrderTitleHold();
+      }
+    };
 
     const update = () => {
       const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-      const progress = clamp(window.scrollY / maxScroll);
+      const rawProgress = clamp(window.scrollY / maxScroll);
+      const reduceMotion = reducedMotionQuery.matches || forceReducedMotion;
+      let progress = rawProgress;
+
+      if (reduceMotion) {
+        window.clearTimeout(orderTitleHoldTimer);
+        orderTitleHoldTimer = 0;
+        orderTitleHoldStarted = false;
+        orderTitleHoldComplete = false;
+        experience.dataset.orderTitleHold = "skipped";
+        experience.dataset.orderTitleBlur = "settled";
+      } else {
+        if (
+          (orderTitleHoldStarted || orderTitleHoldComplete)
+          && rawProgress < ORDER_TITLE_HOLD_PROGRESS - 0.004
+        ) {
+          resetOrderTitleHold();
+        }
+
+        if (
+          !orderTitleHoldComplete
+          && (orderTitleHoldStarted || rawProgress >= ORDER_TITLE_HOLD_PROGRESS)
+        ) {
+          if (!orderTitleHoldStarted) {
+            orderTitleHoldStarted = true;
+            experience.dataset.orderTitleHold = "locked";
+            experience.dataset.orderTitleBlur = "active";
+            orderTitleHoldTimer = window.setTimeout(
+              releaseOrderTitleHold,
+              ORDER_TITLE_HOLD_FALLBACK_MS,
+            );
+          }
+
+          progress = ORDER_TITLE_HOLD_PROGRESS;
+          const holdScrollY = maxScroll * ORDER_TITLE_HOLD_PROGRESS;
+          if (Math.abs(window.scrollY - holdScrollY) > 1) {
+            const scroller = document.scrollingElement ?? document.documentElement;
+            scroller.scrollTop = holdScrollY;
+          }
+        } else if (orderTitleHoldComplete) {
+          experience.dataset.orderTitleHold = "released";
+          experience.dataset.orderTitleBlur = "active";
+        } else {
+          experience.dataset.orderTitleHold = "ready";
+          experience.dataset.orderTitleBlur = "idle";
+        }
+      }
+
       const norenProgress = clamp(progress / 0.24);
       const norenLead = delayedClothEase(norenProgress, 0.02);
       const norenShoulder = delayedClothEase(norenProgress, 0.08);
@@ -978,7 +1059,6 @@ export function App() {
       experience.style.setProperty("--story-opacity", "0");
       experience.style.setProperty("--order-opacity", orderIn.toFixed(3));
       experience.style.setProperty("--visit-opacity", visitIn.toFixed(3));
-      experience.dataset.orderTitleBlur = orderIn > 0.08 ? "active" : "idle";
       const nextPhase = progress < ORDER_SCROLL_START
         ? "hero"
         : progress < VISIT_SCROLL_START ? "order" : "visit";
@@ -991,13 +1071,17 @@ export function App() {
     };
 
     update();
+    lastOrderTitleChar?.addEventListener("animationend", handleOrderTitleAnimationEnd);
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
     return () => {
       window.cancelAnimationFrame(frameId);
+      window.clearTimeout(orderTitleHoldTimer);
+      lastOrderTitleChar?.removeEventListener("animationend", handleOrderTitleAnimationEnd);
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
       delete experience.dataset.orderTitleBlur;
+      delete experience.dataset.orderTitleHold;
     };
   }, []);
 

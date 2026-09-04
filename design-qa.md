@@ -391,4 +391,16 @@
 - Build evidence: all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
 - Findings: no actionable P0, P1, or P2 mismatch remains.
 
+## Closing-title scroll hold follow-up
+
+- Direction: prevent every forward jump into the separate visit CTA until the last glyph of `今日の一皿を、心ゆくまで。` has fully completed its BLUR entrance.
+- Interaction model: crossing progress `0.972` starts the existing 1100ms per-glyph animation with 45ms stagger, clamps the document to the order-stage boundary, and consumes further wheel, touch, keyboard, scrollbar, and programmatic forward movement. The lock releases from the final glyph's actual `animationend`, not from an assumed render start; an 11.64-second watchdog exists only as an abnormal-failure escape hatch.
+- Desktop evidence: a jump to the document end is clamped to 6299 / 6480px (`0.97207`), reports `data-order-title-hold="locked"`, keeps the phase at `order`, and holds CTA opacity at `0`. After the thirteenth glyph reaches opacity `1` and `blur(0px)`, the hold reports `released` while the page remains at the order boundary; a subsequent forward input reaches the centered 210 × 58 CTA.
+- Responsive evidence: at 390 × 844 CSS px the same boundary resolves to 7383 / 7596px (`0.97196`); the completed visit CTA remains 280 × 54, centered at approximately 188 × 422, with zero positive horizontal overflow.
+- Reverse and replay evidence: a deliberate return to the top resets the hold to `ready` and the BLUR state to `idle`; re-entering the boundary starts the lock and glyph sequence again instead of trapping backward navigation.
+- Reduced Motion evidence: `?reduced=1` reports `data-order-title-hold="skipped"`, presents every glyph immediately with opacity `1` and no filter, and reaches the visit phase without an artificial delay. The breathing CTA animation also remains disabled.
+- WebGL fallback evidence: `?fallback=1` keeps its semantic ten-panel grid and lower-edge CSS fluid art, reports the hold as `locked` at the order boundary, then releases only after the final glyph reaches opacity `1` and `blur(0px)`.
+- Console and build evidence: desktop, mobile, Reduced Motion, and WebGL fallback browser logs contain no warnings or errors; all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
+- Findings: the initial timer-only version could release early when CSS animation startup was delayed by heavy rendering. The final-glyph completion event and immediate scroll-boundary clamp correct that P1 timing defect; no actionable P0, P1, or P2 mismatch remains.
+
 final result: passed

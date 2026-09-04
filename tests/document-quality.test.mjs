@@ -138,7 +138,16 @@ test("keeps the final scene focused on its closing line and visit CTA", async ()
   assert.doesNotMatch(app, /今日の一皿を、<br \/>心ゆくまで。/);
   assert.match(impactCss, /\.order-stage h2 \{\s*max-width: none;[\s\S]*white-space: nowrap;/);
   assert.match(impactCss, /\.order-stage h2 \{[\s\S]*font-size: clamp\(52px, 7\.6vw, 112px\);[\s\S]*transform: translate3d\(0, calc\(\(1 - var\(--impact-order\)\) \* 74svh\), 0\);/);
-  assert.match(app, /experience\.dataset\.orderTitleBlur = orderIn > 0\.08 \? "active" : "idle"/);
+  assert.match(app, /const ORDER_TITLE_HOLD_PROGRESS = 0\.972;/);
+  assert.match(app, /const ORDER_TITLE_ANIMATION_MS = 1100 \+ \(closingMessage\.length - 1\) \* 45;/);
+  assert.match(app, /const ORDER_TITLE_HOLD_FALLBACK_MS = ORDER_TITLE_ANIMATION_MS \+ 10000;/);
+  assert.match(app, /!orderTitleHoldComplete\s*&& \(orderTitleHoldStarted \|\| rawProgress >= ORDER_TITLE_HOLD_PROGRESS\)/);
+  assert.match(app, /experience\.dataset\.orderTitleHold = "locked";\s*experience\.dataset\.orderTitleBlur = "active";/);
+  assert.match(app, /const scroller = document\.scrollingElement \?\? document\.documentElement;\s*scroller\.scrollTop = holdScrollY;/);
+  assert.match(app, /event\.animationName === "order-title-blur-in"/);
+  assert.match(app, /lastOrderTitleChar\?\.addEventListener\("animationend", handleOrderTitleAnimationEnd\)/);
+  assert.match(app, /experience\.dataset\.orderTitleHold = "released";/);
+  assert.match(app, /experience\.dataset\.orderTitleHold = "skipped";\s*experience\.dataset\.orderTitleBlur = "settled";/);
   assert.match(impactCss, /\.order-title__char \{[\s\S]*width: 0\.915em;[\s\S]*filter: blur\(20px\);[\s\S]*letter-spacing: 0\.5em;/);
   assert.match(impactCss, /animation: order-title-blur-in 1100ms cubic-bezier\(0\.16, 1, 0\.3, 1\) both;\s*animation-delay: calc\(var\(--blur-index\) \* 45ms\);/);
   assert.match(impactCss, /@keyframes order-title-blur-in \{[\s\S]*filter: blur\(20px\);[\s\S]*filter: blur\(0\);[\s\S]*letter-spacing: -0\.085em;/);
