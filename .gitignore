@@ -5,6 +5,7 @@ dist/
 video-reference-frames/
 
 # Local QA captures and generated comparison images
+/qa/
 /qa-*.mjs
 /*.png
 /*.jpg
