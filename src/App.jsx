@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import * as THREE from "three";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { RedInkFluid } from "./RedInkFluid.jsx";
 import {
   clamp,
   DRAGON_ARRIVAL_END,
@@ -15,6 +16,7 @@ import {
   getDragonSectionIndex,
   getDragonScrollRotation,
   getDragonTrackProgress,
+  getDragonUndulationProgress,
   getExitProgress,
   getOrbitProgress,
   getOrderProgress,
@@ -588,6 +590,7 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
         : getDragonArrivalProgress(pageProgress);
       const exit = getExitProgress(pageProgress);
       const exitFade = clamp((exit - 0.12) / 0.88);
+      const dragonUndulationProgress = getDragonUndulationProgress(pageProgress);
       const stageOpacity = panelEntry * (1 - exitFade);
       canvas.dataset.exitProgress = exit.toFixed(3);
       canvas.dataset.dragonArrival = dragonArrivalProgress.toFixed(3);
@@ -696,8 +699,26 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       const synchronizedDragonRotation = isReducedMotion()
         ? 0
         : rotation - spiralRestRotation;
+      const undulationStrength = isReducedMotion()
+        ? 0
+        : dragonArrivalProgress * (1 - exitFade);
+      const undulationPhase = dragonUndulationProgress * Math.PI * 6;
+      const dragonSway = Math.sin(undulationPhase)
+        * (compact ? 0.18 : 0.28)
+        * undulationStrength;
+      const dragonDepthSway = Math.cos(undulationPhase * 0.75)
+        * (compact ? 0.08 : 0.13)
+        * undulationStrength;
+      const dragonRoll = -Math.cos(undulationPhase)
+        * (compact ? 0.035 : 0.055)
+        * undulationStrength;
+      const dragonPitch = Math.sin(undulationPhase * 0.5)
+        * (compact ? 0.012 : 0.018)
+        * undulationStrength;
       centerpieceRoot.rotation.set(0, 0, 0);
-      dragonPivot.rotation.set(0, synchronizedDragonRotation, 0);
+      centerpieceRoot.position.x = dragonSway;
+      centerpieceRoot.position.z = dragonDepthSway;
+      dragonPivot.rotation.set(dragonPitch, synchronizedDragonRotation, dragonRoll);
       centerpieceRoot.position.y = THREE.MathUtils.lerp(
         dragonArrivalStartY,
         dragonTrackedY,
@@ -705,6 +726,10 @@ function FoodOrbitCanvas({ onActiveChange, onUnavailable }) {
       ) + exit * (compact ? 6.2 : 7.4);
       canvas.dataset.dragonPositionY = centerpieceRoot.position.y.toFixed(3);
       canvas.dataset.dragonRotation = synchronizedDragonRotation.toFixed(4);
+      canvas.dataset.dragonUndulation = dragonUndulationProgress.toFixed(3);
+      canvas.dataset.dragonSwayX = dragonSway.toFixed(3);
+      canvas.dataset.dragonSwayZ = dragonDepthSway.toFixed(3);
+      canvas.dataset.dragonRoll = dragonRoll.toFixed(4);
       canvas.dataset.dragonChapter = dragonChapter;
       canvas.dataset.dragonSectionIndex = String(dragonSectionIndex);
       canvas.dataset.dragonTrack = dragonTrackProgress.toFixed(3);
@@ -1034,6 +1059,11 @@ export function App() {
       <div className="paper-noise" aria-hidden="true" />
       <div className="lattice-backdrop" aria-hidden="true" />
       <div className="sun-mark" aria-hidden="true" />
+      <RedInkFluid
+        active={phase === "order" || phase === "visit"}
+        forceFallback={webglUnavailable}
+        forceReducedMotion={forceReducedMotion}
+      />
 
       <header className="top-nav">
         <button className="brand-button" type="button" onClick={() => scrollToProgress(0)} aria-label="ページ先頭へ">

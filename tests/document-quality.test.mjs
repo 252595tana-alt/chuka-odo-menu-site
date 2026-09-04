@@ -47,8 +47,13 @@ test("rotates spiral panels and the dragon from scroll position only", async () 
   assert.match(app, /const targetRotation = isReducedMotion\(\) \? 0 : getSpiralRotation\(pageProgress\)/);
   assert.match(app, /const targetDragonRotation = isReducedMotion\(\) \? 0 : getDragonScrollRotation\(pageProgress\)/);
   assert.match(app, /const synchronizedDragonRotation = isReducedMotion\(\)[\s\S]*: rotation - spiralRestRotation;/);
-  assert.match(app, /dragonPivot\.rotation\.set\(0, synchronizedDragonRotation, 0\)/);
+  assert.match(app, /const dragonUndulationProgress = getDragonUndulationProgress\(pageProgress\)/);
+  assert.match(app, /const undulationStrength = isReducedMotion\(\)[\s\S]*dragonArrivalProgress \* \(1 - exitFade\)/);
+  assert.match(app, /centerpieceRoot\.position\.x = dragonSway/);
+  assert.match(app, /centerpieceRoot\.position\.z = dragonDepthSway/);
+  assert.match(app, /dragonPivot\.rotation\.set\(dragonPitch, synchronizedDragonRotation, dragonRoll\)/);
   assert.match(app, /dataset\.dragonRotation = synchronizedDragonRotation\.toFixed\(4\)/);
+  assert.match(app, /dataset\.dragonSwayX = dragonSway\.toFixed\(3\)/);
   assert.doesNotMatch(app, /autoOffset|autoPeriod|pauseAutoUntil|manualOffset|drag\.active/);
   assert.doesNotMatch(app, /pointerDown|pointerMove|pointerUp|is-dragging/);
   assert.doesNotMatch(app, /ArrowLeft|ArrowRight|addEventListener\("keydown"/);
@@ -123,6 +128,7 @@ test("keeps the noren opening and post-mist story focused on the restaurant iden
 
 test("keeps the final scene focused on its closing line and visit CTA", async () => {
   const app = await readFile(new URL("src/App.jsx", projectUrl), "utf8");
+  const redInkFluid = await readFile(new URL("src/RedInkFluid.jsx", projectUrl), "utf8");
   const impact = await readFile(new URL("src/ImpactLayer.jsx", projectUrl), "utf8");
   const impactCss = await readFile(new URL("src/impact.css", projectUrl), "utf8");
 
@@ -147,6 +153,16 @@ test("keeps the final scene focused on its closing line and visit CTA", async ()
   assert.match(impactCss, /\.visit-stage \.order-visit-cta \{[\s\S]*transform: translate3d\(0, calc\(\(1 - var\(--visit-opacity\)\) \* 60svh\), 0\);/);
   assert.match(impactCss, /\.experience\[data-reduced-motion="true"\] \.visit-stage \.order-visit-cta \{\s*transform: none;\s*transition: none;/);
   assert.match(impactCss, /\.experience\[data-reduced-motion="true"\] \.order-visit-cta:hover,[\s\S]*\.experience\[data-reduced-motion="true"\] \.order-visit-cta:focus-visible svg \{\s*transform: none;/);
+  assert.match(impactCss, /html\[data-impact-ready="true"\]\[data-impact-scene="order"\],[\s\S]*cursor: default !important;/);
+  assert.match(impactCss, /html\[data-impact-ready="true"\]\[data-impact-scene="order"\] button,[\s\S]*cursor: pointer !important;/);
+  assert.match(app, /<RedInkFluid[\s\S]*active=\{phase === "order" \|\| phase === "visit"\}[\s\S]*forceFallback=\{webglUnavailable\}[\s\S]*forceReducedMotion=\{forceReducedMotion\}/);
+  assert.match(redInkFluid, /canvas\.getContext\("webgl"/);
+  assert.match(redInkFluid, /window\.addEventListener\("pointermove", onPointerMove/);
+  assert.match(redInkFluid, /data-fluid-mode=\{mode\}/);
+  assert.match(redInkFluid, /reducedMotion \? "static" : "interactive"/);
+  assert.match(redInkFluid, /forceFallback \? "fallback" : "off"/);
+  assert.match(impactCss, /\.closing-fluid\[data-fluid-mode="fallback"\] \.closing-fluid__fallback \{\s*display: block;/);
+  assert.match(impactCss, /\.experience\[data-reduced-motion="true"\] \.closing-fluid,/);
 });
 
 test("uses the real 3D dragon centerpiece and excludes prohibited identities", async () => {
@@ -161,7 +177,7 @@ test("uses the real 3D dragon centerpiece and excludes prohibited identities", a
   assert.match(app, /DRACOLoader/);
   assert.match(app, /modelUrl\("dragon-hunyuan-4view-gold\.glb"\)/);
   assert.match(app, /dataset\.dragonAsset = "dragon-hunyuan-4view-gold\.glb"/);
-  assert.match(app, /dragonPivot\.rotation\.set\(0, synchronizedDragonRotation, 0\)/);
+  assert.match(app, /dragonPivot\.rotation\.set\(dragonPitch, synchronizedDragonRotation, dragonRoll\)/);
   assert.match(app, /dataset\.dragonFacing = "scroll-synchronized"/);
   assert.match(app, /dataset\.dragonFraming = "oversized-crop"/);
   assert.match(app, /dataset\.dragonChapter = dragonChapter/);

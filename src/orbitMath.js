@@ -39,6 +39,14 @@ export const getDragonArrivalProgress = (pageProgress) => {
   return smoothstep(progress);
 };
 
+export const getDragonUndulationProgress = (pageProgress) => {
+  const arrivalProgress = getDragonArrivalProgress(pageProgress);
+  const orbitProgress = getOrbitProgress(pageProgress);
+  return pageProgress <= ORBIT_SCROLL_START
+    ? arrivalProgress * 0.22
+    : 0.22 + orbitProgress * 0.78;
+};
+
 export const getExitProgress = (pageProgress) => {
   const progress = clamp(
     (pageProgress - EXIT_SCROLL_START) / (EXIT_SCROLL_END - EXIT_SCROLL_START),

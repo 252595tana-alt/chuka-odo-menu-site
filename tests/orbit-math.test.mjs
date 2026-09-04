@@ -20,6 +20,7 @@ import {
   getDragonSectionIndex,
   getDragonScrollRotation,
   getDragonTrackProgress,
+  getDragonUndulationProgress,
   getExitProgress,
   getOrderProgress,
   getVisitProgress,
@@ -56,6 +57,25 @@ test("the dragon rises fully before the spiral panels begin", () => {
   assert.equal(getDragonArrivalProgress(DRAGON_ARRIVAL_START), 0);
   assert.equal(getDragonArrivalProgress((DRAGON_ARRIVAL_START + DRAGON_ARRIVAL_END) / 2), 0.5);
   assert.equal(getDragonArrivalProgress(DRAGON_ARRIVAL_END), 1);
+});
+
+test("the dragon undulation follows the scroll-led ascent", () => {
+  assert.equal(getDragonUndulationProgress(DRAGON_ARRIVAL_START), 0);
+  assert.equal(getDragonUndulationProgress(DRAGON_ARRIVAL_END), 0.22);
+  assert.ok(
+    Math.abs(getDragonUndulationProgress(ORBIT_SCROLL_START + ORBIT_SCROLL_SPAN) - 1) < 1e-10,
+  );
+
+  const samples = [
+    DRAGON_ARRIVAL_START,
+    (DRAGON_ARRIVAL_START + DRAGON_ARRIVAL_END) / 2,
+    DRAGON_ARRIVAL_END,
+    ORBIT_SCROLL_START + ORBIT_SCROLL_SPAN / 2,
+    ORBIT_SCROLL_START + ORBIT_SCROLL_SPAN,
+  ].map(getDragonUndulationProgress);
+  for (let index = 1; index < samples.length; index += 1) {
+    assert.ok(samples[index] >= samples[index - 1]);
+  }
 });
 
 test("the dragon framing travels through five sections aligned to panel pairs", () => {

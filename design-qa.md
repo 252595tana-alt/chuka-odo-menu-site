@@ -322,4 +322,28 @@
 - Console and build evidence: the first browser pass exposed a missing `ORBIT_SCROLL_START` import that static production bundling did not catch. The import and regression assertion were added; a clean normal reload now reports no browser warnings or errors. All 17 automated tests pass, and the production Vite build plus Sites packaging step succeeds.
 - Findings: no actionable P0, P1, or P2 mismatch remains.
 
+## Dragon undulating ascent follow-up
+
+- Direction: make the selected golden dragon rise with a restrained serpentine motion while preserving its existing head-first entrance, five-section vertical travel, and synchronized menu rotation.
+- Motion model: a monotonic scroll-derived phase now drives three waves across the complete dragon journey. Lateral sway, shallower depth sway, and gentle path-following roll and pitch combine into a spatial ascent without deforming the GLB mesh.
+- Runtime checkpoints: at progress `0.59`, `0.65`, `0.75`, and `0.82`, the dragon X values alternate `-0.236`, `0.182`, `-0.207`, and `0.169`; the matching Y values advance from `-1.550` to `1.675`. This verifies visible side-to-side undulation while the sculpture continues upward.
+- Idle evidence: at progress `0.65`, X, Z, roll, Y, and synchronized rotation remain byte-for-byte unchanged after a 1.8-second hold. Elapsed time does not drive the new motion.
+- Responsive evidence: at 390 × 844 CSS px the compact amplitude is limited to `0.18` world units, the sampled X value is `0.117`, there is no positive horizontal overflow, six depth-sorted panels remain visible, and the background video stays playing at ready state 4.
+- Reduced Motion evidence: `?reduced=1` reports X, Z, roll, and dragon rotation as exactly `0`, preserving a straight scroll-led ascent without the serpentine offsets.
+- WebGL fallback evidence: `?fallback=1` exposes no WebGL canvas, retains all ten semantic fallback buttons, introduces no horizontal overflow, and keeps the background film playing at ready state 4.
+- Build evidence: all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
+- Findings: no actionable P0, P1, or P2 mismatch remains.
+
+## Red ink fluid closing screens follow-up
+
+- Direction: use the referenced `Ink in Water` demo as a motion and material benchmark for both closing screens, reinterpreted in the site's own oxblood, crimson, vermilion, jade, and ivory palette.
+- Implementation: a dedicated full-viewport fragment shader now renders four slowly folding ink blooms and a cursor-driven local vortex behind the closing line and final visit CTA only. A dark elliptical quiet zone preserves the copy and CTA hierarchy.
+- Desktop evidence: at 1440 × 900 the final plaque rests exactly at the 712.5 × 450 content-center coordinate, retains its 210 × 58 size and native pointer cursor, and the document reports zero positive horizontal overflow.
+- Responsive evidence: at 390 × 844 the closing line occupies 343.3px of the 375px content width without wrapping or overflow; the final plaque remains 280 × 54 and centered at 187.5 × 422.
+- Reduced Motion evidence: `?reduced=1` reports `data-fluid-mode="static"`; the shader draws one deterministic red-ink frame and schedules no ambient animation loop.
+- WebGL fallback evidence: `?fallback=1` reports `data-fluid-mode="fallback"`, hides the fluid canvas, shows the CSS red-ink fallback, keeps the existing ten-item semantic menu fallback, and introduces no horizontal overflow.
+- Interaction and accessibility evidence: the visual layer is `aria-hidden` and pointer-transparent; the final Maps link remains keyboard focusable and keeps its native pointer cursor. Browser logs contain no warnings or errors.
+- Build evidence: all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
+- Findings: no actionable P0, P1, or P2 mismatch remains.
+
 final result: passed
