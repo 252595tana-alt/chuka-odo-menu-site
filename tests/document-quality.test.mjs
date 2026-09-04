@@ -134,7 +134,7 @@ test("keeps the final scene focused on its closing line and visit CTA", async ()
 
   assert.match(app, /const closingMessage = "今日の一皿を、心ゆくまで。"/);
   assert.match(app, /<section id="contact" className="order-stage" aria-labelledby="order-title">[\s\S]*<h2 id="order-title" aria-label=\{closingMessage\}>[\s\S]*Array\.from\(closingMessage\)[\s\S]*className="order-title__char"[\s\S]*<\/h2>\s*<\/section>/);
-  assert.match(app, /<section id="visit" className="visit-stage" aria-label="お店へのご案内">\s*<a[\s\S]*className="order-visit-cta"[\s\S]*<span>お店に行く<\/span>[\s\S]*<\/a>\s*<\/section>/);
+  assert.match(app, /<section id="visit" className="visit-stage" aria-label="お店へのご案内">\s*<a[\s\S]*className="order-visit-cta breathing-glow"[\s\S]*<span>お店に行く<\/span>[\s\S]*<\/a>\s*<\/section>/);
   assert.doesNotMatch(app, /今日の一皿を、<br \/>心ゆくまで。/);
   assert.match(impactCss, /\.order-stage h2 \{\s*max-width: none;[\s\S]*white-space: nowrap;/);
   assert.match(impactCss, /\.order-stage h2 \{[\s\S]*font-size: clamp\(52px, 7\.6vw, 112px\);[\s\S]*transform: translate3d\(0, calc\(\(1 - var\(--impact-order\)\) \* 74svh\), 0\);/);
@@ -143,6 +143,9 @@ test("keeps the final scene focused on its closing line and visit CTA", async ()
   assert.match(impactCss, /animation: order-title-blur-in 1100ms cubic-bezier\(0\.16, 1, 0\.3, 1\) both;\s*animation-delay: calc\(var\(--blur-index\) \* 45ms\);/);
   assert.match(impactCss, /@keyframes order-title-blur-in \{[\s\S]*filter: blur\(20px\);[\s\S]*filter: blur\(0\);[\s\S]*letter-spacing: -0\.085em;/);
   assert.match(impactCss, /\.experience\[data-reduced-motion="true"\] \.order-title__char \{[\s\S]*animation: none !important;[\s\S]*opacity: 1;[\s\S]*filter: none;/);
+  assert.match(impactCss, /\.experience\[data-phase="visit"\] \.breathing-glow \{\s*animation: breathing-cta-glow 3s ease-in-out infinite;/);
+  assert.match(impactCss, /@keyframes breathing-cta-glow \{[\s\S]*scale: 1;[\s\S]*scale: 1\.045;[\s\S]*0 0 64px rgba\(201, 173, 121, 0\.3\)/);
+  assert.match(impactCss, /\.experience\[data-reduced-motion="true"\]\[data-phase="visit"\] \.breathing-glow \{\s*animation: none !important;\s*scale: 1;/);
   assert.match(impactCss, /\.experience\[data-reduced-motion="true"\] \.order-stage h2 \{\s*transform: none;/);
   assert.match(impactCss, /\.order-stage \{\s*padding: 8vh 5vw;\s*align-items: center;\s*justify-content: center;\s*text-align: center;/);
   assert.match(app, /href="https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=/);

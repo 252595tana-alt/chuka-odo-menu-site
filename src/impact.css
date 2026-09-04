@@ -1212,6 +1212,37 @@ html[data-impact-noren="closed"] .impact-cursor {
     background 180ms ease;
 }
 
+.breathing-glow {
+  transform-origin: center;
+  will-change: scale, box-shadow;
+}
+
+.experience[data-phase="visit"] .breathing-glow {
+  animation: breathing-cta-glow 3s ease-in-out infinite;
+}
+
+@keyframes breathing-cta-glow {
+  0%,
+  100% {
+    scale: 1;
+    box-shadow:
+      inset 0 0 0 3px rgba(2, 19, 16, 0.9),
+      inset 0 0 0 4px rgba(201, 173, 121, 0.3),
+      0 0 12px rgba(201, 173, 121, 0.34),
+      0 16px 44px rgba(0, 0, 0, 0.32);
+  }
+
+  50% {
+    scale: 1.045;
+    box-shadow:
+      inset 0 0 0 3px rgba(2, 19, 16, 0.9),
+      inset 0 0 0 4px rgba(235, 207, 142, 0.46),
+      0 0 30px rgba(218, 180, 96, 0.62),
+      0 0 64px rgba(201, 173, 121, 0.3),
+      0 20px 54px rgba(0, 0, 0, 0.38);
+  }
+}
+
 .order-visit-cta::before {
   content: "";
   position: absolute;
@@ -2014,6 +2045,12 @@ html[data-impact-scene="dragon-entry"] .orbit-fallback {
     transition: none;
   }
 
+  .experience[data-phase="visit"] .breathing-glow {
+    animation: none !important;
+    scale: 1;
+    will-change: auto;
+  }
+
   .order-visit-cta:hover,
   .order-visit-cta:focus-visible,
   .order-visit-cta:hover svg,
@@ -2054,6 +2091,12 @@ html[data-impact-scene="dragon-entry"] .orbit-fallback {
 .experience[data-reduced-motion="true"] .visit-stage .order-visit-cta {
   transform: none;
   transition: none;
+}
+
+.experience[data-reduced-motion="true"][data-phase="visit"] .breathing-glow {
+  animation: none !important;
+  scale: 1;
+  will-change: auto;
 }
 
 .experience[data-reduced-motion="true"] .order-visit-cta svg {

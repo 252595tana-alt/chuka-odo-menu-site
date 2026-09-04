@@ -1158,7 +1158,7 @@ export function App() {
 
       <section id="visit" className="visit-stage" aria-label="お店へのご案内">
         <a
-          className="order-visit-cta"
+          className="order-visit-cta breathing-glow"
           href="https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E8%8F%AF%E3%81%AE%E7%8E%8B%E9%81%93"
           target="_blank"
           rel="noreferrer"

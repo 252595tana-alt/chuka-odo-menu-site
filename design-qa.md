@@ -380,4 +380,15 @@
 - Build evidence: all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
 - Findings: the initial expanding line-box issue was corrected with fixed glyph advances; no actionable P0, P1, or P2 mismatch remains.
 
+## Breathing-glow final CTA follow-up
+
+- Direction: reinterpret the supplied breathing-glow button as the existing Chinese lacquer CTA rather than introducing a red control that conflicts with the approved jade/celadon closing palette.
+- Implementation: the final Maps link retains its deep-jade surface, double gold frame, Mincho label, circular arrow, and native pointer cursor. While the visit phase is active, an independent three-second ease-in-out animation pulses layered amber-gold light and scales the link from `1` to at most `1.045` without overriding its scroll entrance transform.
+- Desktop evidence: at 1280 × 720 the animation reports `breathing-cta-glow`, duration `3s`, and a measured pulse frame of scale `1.03719` with gold light reaching 60.53px. Its visual center remains at the 633 × 360 content center and the document introduces no horizontal overflow.
+- Responsive evidence: at 390 × 844 the CTA retains its 280 × 54 base tap target, remains centered at 188 × 422 throughout the pulse, and introduces no horizontal overflow.
+- Reduced Motion evidence: `?reduced=1` reports `animation-name: none`, scale `1`, the original 280 × 54 dimensions, and the same centered placement while the static jade fluid frame remains active.
+- Interaction and console evidence: the control remains a semantic external link, its exact label and focus outline are unchanged, its computed desktop cursor is `pointer`, and browser logs contain no warnings or errors.
+- Build evidence: all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
+- Findings: no actionable P0, P1, or P2 mismatch remains.
+
 final result: passed
