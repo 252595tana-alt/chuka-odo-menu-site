@@ -946,7 +946,7 @@ html[data-impact-noren="closed"] .impact-cursor {
   inset: 0;
   z-index: 39;
   overflow: hidden;
-  background: rgba(24, 0, 3, 0.08);
+  background: rgba(1, 24, 17, 0.08);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -977,10 +977,10 @@ html[data-impact-noren="closed"] .impact-cursor {
 
 .closing-fluid::after {
   z-index: 3;
-  background-image: radial-gradient(circle, rgba(255, 150, 116, 0.24) 0 0.7px, transparent 0.8px);
+  background-image: radial-gradient(circle, rgba(212, 176, 97, 0.28) 0 0.7px, transparent 0.8px);
   background-size: 5px 5px;
   mix-blend-mode: soft-light;
-  opacity: 0.12;
+  opacity: 0.2;
 }
 
 .closing-fluid__canvas,
@@ -1003,10 +1003,10 @@ html[data-impact-noren="closed"] .impact-cursor {
   display: none;
   overflow: hidden;
   background:
-    radial-gradient(circle at 12% 34%, rgba(180, 5, 25, 0.56), transparent 30%),
-    radial-gradient(circle at 87% 28%, rgba(238, 35, 32, 0.48), transparent 31%),
-    radial-gradient(circle at 26% 91%, rgba(126, 0, 21, 0.72), transparent 36%),
-    radial-gradient(circle at 80% 91%, rgba(231, 48, 29, 0.46), transparent 35%);
+    radial-gradient(circle at 12% 34%, rgba(8, 94, 70, 0.58), transparent 30%),
+    radial-gradient(circle at 87% 28%, rgba(35, 141, 103, 0.46), transparent 31%),
+    radial-gradient(circle at 26% 91%, rgba(4, 63, 54, 0.74), transparent 36%),
+    radial-gradient(circle at 80% 91%, rgba(202, 153, 66, 0.36), transparent 35%);
   filter: saturate(1.12);
 }
 
@@ -1023,7 +1023,7 @@ html[data-impact-noren="closed"] .impact-cursor {
   width: 48vmax;
   aspect-ratio: 1;
   border-radius: 43% 57% 61% 39% / 46% 34% 66% 54%;
-  background: radial-gradient(circle at 38% 35%, rgba(255, 103, 70, 0.52), rgba(172, 2, 24, 0.38) 38%, transparent 69%);
+  background: radial-gradient(circle at 38% 35%, rgba(142, 200, 164, 0.44), rgba(17, 113, 78, 0.44) 38%, transparent 69%);
   filter: blur(22px);
   opacity: 0.68;
   animation: closing-fluid-drift 14s ease-in-out infinite alternate;

@@ -346,4 +346,15 @@
 - Build evidence: all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
 - Findings: no actionable P0, P1, or P2 mismatch remains.
 
+## Jade and celadon fluid palette follow-up
+
+- Direction: the prior red fluid read as blood-like, so the user's latest feedback supersedes the red palette while retaining the approved ink-in-water motion and two-screen placement.
+- Palette: shader blooms now move from ink jade through imperial jade and celadon, with amber-gold restricted to fine filaments. The CSS fallback uses the same jade/celadon/gold family and contains no red liquid treatment.
+- Hierarchy: the central dark quiet zone, warm-ivory closing line, and deep-jade lacquer CTA remain unchanged so the new color treatment does not compete with the final action.
+- Desktop evidence: at 1440 × 900 the animated jade blooms remain at the frame edges, the closing line is fully readable, and the final CTA rests exactly at the 712.5 × 450 content center with zero positive horizontal overflow.
+- Responsive evidence: at 390 × 844 the final CTA retains its 280 × 54 tap target, finishes exactly at the 187.5 × 422 content center, and introduces no horizontal overflow.
+- Reduced Motion and fallback evidence: `?reduced=1` reports `data-fluid-mode="static"` with zero-duration transitions. `?fallback=1` hides the WebGL fluid canvas and shows the matching jade, celadon, and amber CSS artwork.
+- Console and build evidence: browser logs contain no warnings or errors; all 18 automated tests pass; the production Vite build and Sites packaging step succeed.
+- Findings: no actionable P0, P1, or P2 mismatch remains.
+
 final result: passed

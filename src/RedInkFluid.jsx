@@ -91,13 +91,14 @@ const fragmentShaderSource = `
     float rim = smoothstep(0.28, 0.72, ink) - smoothstep(0.74, 1.16, ink);
     float texture = fbm(point * 6.5 - warp * 2.0 + 3.7);
 
-    vec3 oxblood = vec3(0.22, 0.004, 0.014);
-    vec3 crimson = vec3(0.76, 0.018, 0.040);
-    vec3 vermilion = vec3(1.00, 0.145, 0.070);
-    vec3 coral = vec3(1.00, 0.43, 0.30);
-    vec3 color = mix(oxblood, crimson, smoothstep(0.05, 0.82, ink));
-    color = mix(color, vermilion, rim * (0.45 + texture * 0.35));
-    color += coral * filaments * 0.20;
+    vec3 inkJade = vec3(0.004, 0.12, 0.075);
+    vec3 imperialJade = vec3(0.018, 0.50, 0.285);
+    vec3 celadon = vec3(0.34, 0.78, 0.62);
+    vec3 amberGold = vec3(0.92, 0.58, 0.18);
+    vec3 color = mix(inkJade, imperialJade, smoothstep(0.05, 0.82, ink));
+    color = mix(color, celadon, rim * (0.45 + texture * 0.35));
+    float gilding = rim * smoothstep(0.62, 0.86, texture);
+    color = mix(color, amberGold, clamp(gilding * 0.62 + filaments * 0.26, 0.0, 0.68));
 
     float centerQuiet = 1.0 - 0.34 * exp(-dot(point * vec2(0.72, 2.8), point * vec2(0.72, 2.8)) * 1.8);
     float inkBody = smoothstep(0.12, 0.68, ink);

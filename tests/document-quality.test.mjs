@@ -161,6 +161,11 @@ test("keeps the final scene focused on its closing line and visit CTA", async ()
   assert.match(redInkFluid, /data-fluid-mode=\{mode\}/);
   assert.match(redInkFluid, /reducedMotion \? "static" : "interactive"/);
   assert.match(redInkFluid, /forceFallback \? "fallback" : "off"/);
+  assert.match(redInkFluid, /vec3 inkJade = vec3\(0\.004, 0\.12, 0\.075\)/);
+  assert.match(redInkFluid, /vec3 imperialJade = vec3\(0\.018, 0\.50, 0\.285\)/);
+  assert.match(redInkFluid, /vec3 celadon = vec3\(0\.34, 0\.78, 0\.62\)/);
+  assert.match(redInkFluid, /vec3 amberGold = vec3\(0\.92, 0\.58, 0\.18\)/);
+  assert.doesNotMatch(redInkFluid, /oxblood|crimson|vermilion/);
   assert.match(impactCss, /\.closing-fluid\[data-fluid-mode="fallback"\] \.closing-fluid__fallback \{\s*display: block;/);
   assert.match(impactCss, /\.experience\[data-reduced-motion="true"\] \.closing-fluid,/);
 });
