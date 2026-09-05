@@ -413,4 +413,14 @@
 - Build evidence: all 18 automated tests pass; the production build and deployment verification are recorded with the publishing commit.
 - Findings: CTA wording is now consistent across the complete visit journey; no actionable P0, P1, or P2 mismatch remains.
 
+## Mobile menu-selector removal follow-up
+
+- Source visual truth: the supplied 590 × 1280 phone capture shows the dense two-column ten-item `.menu-selector` covering the lower half of the dragon and active food card; the user's explicit direction is to remove that list on smartphones because it reduces legibility.
+- Implementation: inside the existing `max-width: 760px` breakpoint, `.menu-selector` now uses `display: none`. Its former mobile-only grid sizing and button-density overrides were removed. Desktop selector styles and all ten product controls remain unchanged above the breakpoint.
+- Mobile evidence: at 390 × 844 CSS px the accessibility tree contains no `料理9品と来店案内を選択` region or numbered selector buttons, while the dragon and large spiral food cards occupy the cleared lower area. Ordinary vertical scrolling continues to advance the same ten-panel sequence and the final Maps CTA remains available.
+- Desktop evidence: at 1280 × 720 the accessibility tree still exposes `螺旋の十景から選ぶ` and all ten numbered controls from `01 香煎焼き餃子` through `10 お店に行く`.
+- Responsive and console evidence: the mobile composition introduces no replacement overlay or nested scroll region; browser logs contain no warnings or errors.
+- Build evidence: all 19 automated tests pass; the production build and deployment verification are recorded with the publishing commit.
+- Findings: removing the redundant mobile selector restores the intended visual hierarchy without reducing the scroll-led menu journey; no actionable P0, P1, or P2 mismatch remains.
+
 final result: passed

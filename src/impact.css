@@ -1838,29 +1838,7 @@ html[data-impact-scene="dragon-entry"] .orbit-fallback {
   }
 
   .menu-selector {
-    right: 14px;
-    bottom: 67px;
-    left: 14px;
-    width: auto;
-    grid-template-columns: 1fr 1fr;
-    gap: 3px;
-  }
-
-  .menu-selector > p {
-    margin-bottom: 4px;
-  }
-
-  .menu-selector button {
-    min-height: 34px;
-    padding: 0 9px;
-    grid-template-columns: 25px 1fr;
-    font-size: 9px;
-    background: rgba(3, 15, 12, 0.72);
-  }
-
-  .menu-selector button.is-active,
-  .menu-selector button:hover {
-    padding-left: 11px;
+    display: none;
   }
 
   .flavor-ticker {

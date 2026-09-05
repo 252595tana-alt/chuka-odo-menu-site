@@ -24,6 +24,16 @@ test("keeps the interactive menu accessible without relying on WebGL", async () 
   assert.match(app, /data-reduced-motion=\{forceReducedMotion \? "true" : undefined\}/);
 });
 
+test("hides the dense menu selector on mobile only", async () => {
+  const impactCss = await readFile(new URL("src/impact.css", projectUrl), "utf8");
+  const mobileStart = impactCss.indexOf("@media (max-width: 760px)");
+  const mobileEnd = impactCss.indexOf("@media (prefers-reduced-motion: reduce)", mobileStart);
+  const mobileStyles = impactCss.slice(mobileStart, mobileEnd);
+
+  assert.match(mobileStyles, /\.menu-selector \{\s*display: none;\s*\}/);
+  assert.match(impactCss, /\.menu-selector \{[\s\S]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+});
+
 test("keeps the top navigation free of redundant shortcuts", async () => {
   const app = await readFile(new URL("src/App.jsx", projectUrl), "utf8");
   const header = app.match(/<header className="top-nav">[\s\S]*?<\/header>/)?.[0] ?? "";
